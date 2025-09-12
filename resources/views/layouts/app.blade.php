@@ -2,46 +2,77 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title', 'Sistema')</title>
+    <title>@yield('title', 'Panel Administrativo')</title>
+
+    <!-- AdminLTE + Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-        }
-        .sidebar {
-            width: 250px;
-            min-height: 100vh;
-            background-color: #343a40;
-            color: white;
-        }
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            padding: 12px 20px;
-            display: block;
-        }
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-        .content {
-            flex: 1;
-            padding: 20px;
-        }
-    </style>
 </head>
-<body>
-    <div class="sidebar">
-        <h4 class="text-center py-3">Mi Sistema</h4>
-        <a href="{{ route('clientes.index') }}">Clientes</a>
-        <a href="#">Facturación</a>
-        <a href="#">Caja</a>
-        <a href="#">Contabilidad</a>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+    <!-- Navbar -->
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                {{ Auth::user()->name }}
+            </a>
+            <div class="dropdown-menu dropdown-menu-end">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                </form>
+            </div>
+        </li>
+    </ul>
+</nav>
+
+    <!-- Sidebar -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a href="#" class="brand-link text-center">
+            <span class="brand-text font-weight-light">Mi Sistema</span>
+        </a>
+        <div class="sidebar">
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview">
+                    <li class="nav-item">
+                        <a href="{{ route('clientes.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Clientes</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('productos.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-boxes"></i>
+                            <p>Productos</p>
+                        </a>
+                    </li>
+                    <!-- Puedes agregar más módulos aquí -->
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Contenido -->
+    <div class="content-wrapper p-3">
+        <section class="content">
+            @yield('content')
+        </section>
     </div>
 
-    <div class="content">
-        @yield('content')
-    </div>
+    <!-- Footer -->
+    <footer class="main-footer text-center">
+        <strong>© {{ now()->year }} - Sistema SV</strong>
+    </footer>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- Bootstrap JS + Popper desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
