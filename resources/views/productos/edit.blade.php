@@ -30,6 +30,23 @@
                 <input type="text" name="unidad" class="form-control" value="{{ $producto->unidad }}" required>
                 @error('unidad') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
+            <div class="mb-3">
+    <label class="form-label">Categoría</label>
+    <select name="categoria_id" class="form-select">
+        <option value="">-- Seleccione --</option>
+        @foreach(\App\Models\Categoria::all() as $cat)
+            <option value="{{ $cat->id }}"
+                {{ old('categoria_id', $producto->categoria_id ?? '') == $cat->id ? 'selected' : '' }}>
+                {{ $cat->nombre }}
+            </option>
+        @endforeach
+    </select>
+</div>
+<div class="mb-3">
+    <label class="form-label">Stock mínimo</label>
+    <input type="number" name="stock_minimo" class="form-control"
+           value="{{ old('stock_minimo', $producto->stock_minimo ?? 0) }}">
+</div>
 
             <div class="mb-3">
                 <label class="form-label">Precio Costo</label>

@@ -4,6 +4,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClienteWebController;
 use App\Http\Controllers\ProductoWebController;
+use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\AjusteInventarioController;
+use App\Http\Controllers\FacturaController;
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -32,6 +35,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/productos/{producto}/edit', [ProductoWebController::class, 'edit'])->name('productos.edit');
     Route::put('/productos/{producto}', [ProductoWebController::class, 'update'])->name('productos.update');
     Route::delete('/productos/{producto}', [ProductoWebController::class, 'destroy'])->name('productos.destroy');
+
+
+    Route::resource('categorias', CategoriaController::class)->except('show');
+    Route::get('ajustes/create', [AjusteInventarioController::class, 'create'])->name('ajustes.create');
+    Route::post('ajustes', [AjusteInventarioController::class, 'store'])->name('ajustes.store');
+
+
+    Route::resource('facturas', FacturaController::class)->only(['index', 'create', 'store']);
+
+
 });
 
 

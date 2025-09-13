@@ -34,7 +34,10 @@
                         <td>{{ $producto->unidad }}</td>
                         <td>${{ number_format($producto->precio_costo, 2) }}</td>
                         <td>${{ number_format($producto->precio_venta, 2) }}</td>
-                        <td>{{ $producto->stock }}</td>
+                        <td>  {{ $producto->stock }}
+    @if($producto->stock <= $producto->stock_minimo)
+        <span class="badge bg-danger">Bajo</span>
+    @endif</td>
                         <td>
                             <a href="{{ route('productos.edit', $producto) }}" class="btn btn-warning btn-sm">Editar</a>
                             <form action="{{ route('productos.destroy', $producto) }}" method="POST" class="d-inline">

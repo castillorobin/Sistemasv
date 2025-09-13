@@ -50,6 +50,20 @@
                             <p>Productos</p>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('categorias.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-tags"></i>
+                            <p>Categorías</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('ajustes.create') }}" class="nav-link">
+                            <i class="nav-icon fas fa-sliders-h"></i>
+                            <p>Ajuste de Inventario</p>
+                        </a>
+                    </li>
                     <!-- Puedes agregar más módulos aquí -->
                 </ul>
             </nav>
