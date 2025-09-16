@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap 5 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- AdminLTE (solo si estás usándolo) -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -38,39 +46,155 @@
         <div class="sidebar">
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview">
-                    <li class="nav-item">
-                        <a href="{{ route('clientes.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-users"></i>
-                            <p>Clientes</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('productos.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-boxes"></i>
-                            <p>Productos</p>
-                        </a>
-                    </li>
+                    {{-- 1. Administrar Caja --}}
+<li class="nav-item">
+    <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-cash-register"></i>
+        <p>Administrar Caja</p>
+    </a>
+</li>
 
-                    <li class="nav-item">
-                        <a href="{{ route('categorias.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-tags"></i>
-                            <p>Categorías</p>
-                        </a>
-                    </li>
+{{-- 2. Administrar DTE --}}
+<li class="nav-item has-treeview">
+    <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-file-alt"></i>
+        <p>
+            Administrar DTE
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Listado de DTE</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>DTE en contingencia</p>
+            </a>
+        </li>
+    </ul>
+</li>
 
-                    <li class="nav-item">
-                        <a href="{{ route('ajustes.create') }}" class="nav-link">
-                            <i class="nav-icon fas fa-sliders-h"></i>
-                            <p>Ajuste de Inventario</p>
-                        </a>
-                    </li>
+{{-- 3. Productos --}}
+<li class="nav-item">
+    <a href="{{ route('productos.index') }}" class="nav-link {{ request()->routeIs('productos.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-boxes"></i>
+        <p>Productos</p>
+    </a>
+</li>
 
-                    <li class="nav-item">
-                        <a href="{{ route('facturas.index') }}" class="nav-link">
-                            <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                            <p>Facturación</p>
-                        </a>
-                    </li>
+{{-- 4. Compras --}}
+<li class="nav-item">
+    <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-shopping-cart"></i>
+        <p>Compras</p>
+    </a>
+</li>
+
+{{-- 5. Clientes --}}
+<li class="nav-item">
+    <a href="{{ route('clientes.index') }}" class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-users"></i>
+        <p>Clientes</p>
+    </a>
+</li>
+
+{{-- 6. Facturación --}}
+<li class="nav-item has-treeview {{ request()->routeIs('facturas.*') ? 'menu-open' : '' }}">
+    <a href="#" class="nav-link {{ request()->routeIs('facturas.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-file-invoice-dollar"></i>
+        <p>
+            Facturación
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('facturas.index') }}" class="nav-link {{ request()->routeIs('facturas.index') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Listado de facturas</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Reportes</p>
+            </a>
+        </li>
+    </ul>
+</li>
+
+{{-- 7. Configuración --}}
+<li class="nav-item has-treeview {{ request()->routeIs('categorias.*') || request()->routeIs('ajustes.create') ? 'menu-open' : '' }}">
+    <a href="#" class="nav-link {{ request()->routeIs('categorias.*') || request()->routeIs('ajustes.create') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-cogs"></i>
+        <p>
+            Configuración
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('categorias.index') }}" class="nav-link {{ request()->routeIs('categorias.*') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Categorías</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('ajustes.create') }}" class="nav-link {{ request()->routeIs('ajustes.create') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Ajuste de Inventario</p>
+            </a>
+        </li>
+    </ul>
+</li>
+
+{{-- 8. Contabilidad --}}
+<li class="nav-item has-treeview">
+    <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-balance-scale"></i>
+        <p>
+            Contabilidad
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Balances</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Estados de resultados</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Balance de comprobación</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Libros auxiliares</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Libros de IVA</p>
+            </a>
+        </li>
+    </ul>
+</li>
                     <!-- Puedes agregar más módulos aquí -->
                 </ul>
             </nav>
