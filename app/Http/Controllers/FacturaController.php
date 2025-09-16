@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Factura;
 use App\Models\FacturaDetalle;
-use App\Models\Cliente;
+use App\Models\Models\Cliente;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

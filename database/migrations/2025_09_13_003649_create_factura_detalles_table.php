@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('factura_detalles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('factura_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('producto_id')->constrained()->nullOnDelete();
+            $table->foreignId('producto_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('cantidad');
             $table->decimal('precio_unitario', 10, 2);
             $table->decimal('subtotal', 10, 2);

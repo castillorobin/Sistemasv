@@ -64,6 +64,13 @@
                             <p>Ajuste de Inventario</p>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('facturas.index') }}" class="nav-link">
+                            <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                            <p>Facturación</p>
+                        </a>
+                    </li>
                     <!-- Puedes agregar más módulos aquí -->
                 </ul>
             </nav>
