@@ -115,7 +115,7 @@
 </div>
 <input type="hidden" name="productos_json" id="productos_json">
 <div>
-<button class="btn btn-success">Guardar Factura</button>
+<button class="btn btn-success">Generar Factura</button>
 <a href="{{ route('facturas.index') }}" class="btn btn-secondary">Cancelar</a>
 </div>
 </form>
