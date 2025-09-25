@@ -20,6 +20,7 @@
 <th>Tipo</th>
 <th>Fecha</th>
 <th>Total</th>
+<th>Acciones</th>
 </tr>
 </thead>
 <tbody>
@@ -30,6 +31,15 @@
 <td>{{ ucfirst($factura->tipo) }}</td>
 <td>{{ $factura->fecha }}</td>
 <td>${{ number_format($factura->total, 2) }}</td>
+ <td>
+    <a href="{{ route('facturas.show', $factura) }}" class="btn btn-sm btn-info">Ver</a>
+
+    <form action="{{ route('facturas.destroy', $factura) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Está seguro de eliminar esta factura?')">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+    </form>
+</td>
 </tr>
 @endforeach
 </tbody>

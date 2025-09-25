@@ -11,7 +11,9 @@ class Factura extends Model
 'cliente_id', 'tipo', 'fecha', 'total', 'total_sin_iva', 'iva', 'numero'
 ];
 
-
+protected $casts = [
+    'fecha' => 'date', // También puedes usar 'datetime' si fuera con hora
+];
 public function cliente()
 {
 return $this->belongsTo(Cliente::class);

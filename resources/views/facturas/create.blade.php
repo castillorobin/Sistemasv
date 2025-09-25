@@ -1,5 +1,31 @@
 @extends('layouts.app')
 @section('content')
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- jQuery (necesario para Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<style>
+    .select2-container .select2-selection--single {
+        height: calc(2.375rem + 2px); /* Igual a .form-control en Bootstrap 4 */
+        padding: 0.375rem 0.75rem;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 1.5;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100%;
+        top: 0;
+        right: 0.75rem;
+    }
+</style>
+
 <div class="card">
 <div class="card-header">
 <h5>Emitir Factura</h5>
@@ -8,48 +34,86 @@
 <form action="{{ route('facturas.store') }}" method="POST">
 @csrf
 <div class="row mb-3">
-<div class="col-md-6">
-<label class="form-label">Cliente</label>
-<select name="cliente_id" class="form-select" required>
-<option value="">-- Seleccione --</option>
-@foreach($clientes as $cliente)
-<option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
-@endforeach
-</select>
-</div>
-<div class="col-md-3">
-<label class="form-label">Tipo</label>
-<select name="tipo" class="form-select" required>
-<option value="consumidor">Consumidor Final</option>
-<option value="ccf">Crédito Fiscal</option>
-</select>
+<div class="col-md-4">
+<div class="form-group">
+    <label for="cliente_id">Cliente</label>
+    <select id="cliente_id" name="cliente_id" class="form-control select2" required>
+        <option value="">Seleccione un cliente</option>
+        @foreach($clientes as $cliente)
+            <option value="{{ $cliente->id }}">{{ $cliente->nombre }}</option>
+        @endforeach
+    </select>
 </div>
 </div>
 
+<div class="col-md-3">
+    <div class="form-group">
+    <label for="cliente_id">Tipo</label>
+    <select id="cliente_id" name="tipo" class="form-control" required>
+       <option value="consumidor">Consumidor Final</option>
+<option value="ccf">Crédito Fiscal</option>
+    </select>
+</div>
+
+</div>
+
+</div>
 
 <hr>
-<h6>Detalle de Productos</h6>
+<h4>Detalle de Productos</h4>
+<br>
 <div id="productos-wrapper">
-<div class="row mb-2 producto-item">
-<div class="col-md-6">
-<select name="productos[0][producto_id]" class="form-select" required>
-<option value="">-- Seleccione producto --</option>
-@foreach($productos as $prod)
-<option value="{{ $prod->id }}">{{ $prod->nombre }}</option>
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label>Producto</label>
+        <select id="producto_id" class="form-control select2">
+            <option value="">Seleccione</option>
+           @foreach($productos as $producto)
+    <option value="{{ $producto->id }}"
+        data-descripcion="{{ $producto->nombre }}"
+        data-precio="{{ $producto->precio_costo }}">
+        {{ $producto->nombre }}
+    </option>
 @endforeach
-</select>
-</div>
-<div class="col-md-3">
-<input type="number" name="productos[0][cantidad]" class="form-control" placeholder="Cantidad" min="1" required>
-</div>
-<div class="col-md-3">
-<button type="button" class="btn btn-danger remove-item">X</button>
-</div>
-</div>
-</div>
-<button type="button" id="add-producto" class="btn btn-sm btn-secondary mb-3">+ Agregar producto</button>
+        </select>
+    </div>
 
+    <div class="col-md-2">
+        <label>Cantidad</label>
+        <input type="number" id="cantidad" class="form-control" min="1" value="1">
+    </div>
 
+    <div class="col-md-2">
+        <label>Precio</label>
+        <input type="number" id="precio" class="form-control" step="0.01" readonly>
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="button" id="agregarProducto" class="btn btn-primary w-100">Agregar</button>
+    </div>
+</div>
+
+</div>
+
+<div class="row mb-3">
+<div class="col-md-10">
+<table class="table table-bordered" id="tablaProductos">
+    <thead>
+        <tr>
+            <th>Cantidad</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Filas dinámicas aquí -->
+    </tbody>
+</table>
+</div>
+</div>
+<input type="hidden" name="productos_json" id="productos_json">
 <div>
 <button class="btn btn-success">Guardar Factura</button>
 <a href="{{ route('facturas.index') }}" class="btn btn-secondary">Cancelar</a>
@@ -89,4 +153,83 @@ if (items.length > 1) e.target.closest('.producto-item').remove();
 }
 });
 </script>
+
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "Seleccione una opción",
+            allowClear: true
+        });
+    });
+</script>
+
+<script>
+    let productos = [];
+
+    $(document).ready(function () {
+        $('.select2').select2();
+
+        // Cargar precio al seleccionar producto
+        $('#producto_id').on('change', function () {
+            const selected = $(this).find(':selected');
+            const precio = selected.data('precio') || 0;
+            $('#precio').val(precio);
+        });
+
+        // Agregar producto a la tabla
+        $('#agregarProducto').on('click', function () {
+            const productoId = $('#producto_id').val();
+            const descripcion = $('#producto_id').find(':selected').data('descripcion');
+            const precio = parseFloat($('#precio').val());
+            const cantidad = parseInt($('#cantidad').val());
+
+            if (!productoId || cantidad <= 0) {
+                alert("Debe seleccionar un producto y cantidad válida.");
+                return;
+            }
+
+            const subtotal = (precio * cantidad).toFixed(2);
+
+            // Agregar a arreglo
+            productos.push({
+                producto_id: productoId,
+                descripcion,
+                precio,
+                cantidad,
+                subtotal
+            });
+
+            // Agregar fila a la tabla
+            $('#tablaProductos tbody').append(`
+                <tr>
+                    <td>${cantidad}</td>
+                    <td>${descripcion}</td>
+                    <td>$${precio.toFixed(2)}</td>
+                    <td>$${subtotal}</td>
+                    <td><button type="button" class="btn btn-danger btn-sm eliminarProducto" data-index="${productos.length - 1}">Eliminar</button></td>
+                </tr>
+            `);
+
+            // Limpiar campos
+            $('#producto_id').val(null).trigger('change');
+            $('#cantidad').val(1);
+            $('#precio').val('');
+
+            actualizarJSON();
+        });
+
+        // Eliminar producto de la tabla
+        $('#tablaProductos').on('click', '.eliminarProducto', function () {
+            const index = $(this).data('index');
+            productos.splice(index, 1);
+            $(this).closest('tr').remove();
+            actualizarJSON();
+        });
+
+        function actualizarJSON() {
+            $('#productos_json').val(JSON.stringify(productos));
+        }
+    });
+</script>
+
 @endsection

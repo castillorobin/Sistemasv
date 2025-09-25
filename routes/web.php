@@ -41,8 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::get('ajustes/create', [AjusteInventarioController::class, 'create'])->name('ajustes.create');
     Route::post('ajustes', [AjusteInventarioController::class, 'store'])->name('ajustes.store');
 
-
-    Route::resource('facturas', FacturaController::class)->only(['index', 'create', 'store']);
+Route::resource('facturas', FacturaController::class);
+//    Route::resource('facturas', FacturaController::class)->only(['index', 'create', 'store']);
 
 
 });
