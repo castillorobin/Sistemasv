@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductoWebController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\AjusteInventarioController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\CompraController;
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -44,6 +45,7 @@ Route::middleware('auth')->group(function () {
 Route::resource('facturas', FacturaController::class);
 //    Route::resource('facturas', FacturaController::class)->only(['index', 'create', 'store']);
 
+Route::resource('compras', CompraController::class)->only(['index', 'create', 'store']);
 
 });
 

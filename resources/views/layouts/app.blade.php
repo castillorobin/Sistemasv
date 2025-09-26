@@ -89,8 +89,8 @@
 
 {{-- 4. Compras --}}
 <li class="nav-item">
-    <a href="#" class="nav-link">
-        <i class="nav-icon fas fa-shopping-cart"></i>
+    <a href="{{ route('compras.index') }}" class="nav-link {{ request()->routeIs('compras.index') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-shopping-bag"></i>
         <p>Compras</p>
     </a>
 </li>
