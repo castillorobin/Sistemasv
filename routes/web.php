@@ -9,6 +9,7 @@ use App\Http\Controllers\AjusteInventarioController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\CompraController;
 use App\Http\Controllers\DTEController;
+use App\Http\Controllers\ProveedorController;
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -58,6 +59,12 @@ Route::get('/dtes/descargar-json', [\App\Http\Controllers\DTEController::class, 
 
 //Contingencia
 Route::get('/dtes/emitirEnContingencia/{id}', [ContingenciaController::class, 'emitirEnContingencia'])->name('dtes.emitirEnContingencia');
+
+
+//Proveedores
+Route::resource('proveedores', ProveedorController::class)->parameters([
+    'proveedores' => 'proveedor'
+]);
 
 });
 

@@ -102,6 +102,13 @@
         <p>Clientes</p>
     </a>
 </li>
+{{-- 5. Proveedores --}}
+<li class="nav-item">
+    <a href="{{ route('proveedores.index') }}" class="nav-link {{ request()->routeIs('proveedores.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-truck"></i>
+        <p>Proveedores</p>
+    </a>
+</li>
 
 {{-- 6. Facturación --}}
 <li class="nav-item has-treeview {{ request()->routeIs('facturas.*') ? 'menu-open' : '' }}">
