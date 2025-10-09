@@ -14,15 +14,18 @@ return new class extends Migration
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('tipo_documento')->nullable();
-            $table->string('numero_documento')->nullable();
+            $table->string('nit')->nullable();
+            $table->string('dui')->nullable();
             $table->string('nrc')->nullable();
-            $table->string('giro')->nullable();
             $table->string('telefono')->nullable();
+            $table->integer('actividad_economica_id')->nullable();
+            $table->integer('departamento_id')->nullable();
+            $table->integer('municipio_id')->nullable();
             $table->string('correo')->nullable();
             $table->text('direccion')->nullable();
-            $table->string('departamento')->nullable();
-            $table->string('municipio')->nullable();
+            $table->string('nombre_comercial')->nullable();
+            
+          
             $table->timestamps();
         });
     }

@@ -16,6 +16,7 @@ class Cliente extends Model
     'dui',
     'nrc',
     'telefono',
+    'direccion',
     'correo',
     'actividad_economica_id',
     'departamento_id',
