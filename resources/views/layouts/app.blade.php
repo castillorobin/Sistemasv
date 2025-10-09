@@ -65,7 +65,7 @@
     </a>
     <ul class="nav nav-treeview">
         <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="/dtes" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Listado de DTE</p>
             </a>
@@ -100,6 +100,13 @@
     <a href="{{ route('clientes.index') }}" class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}">
         <i class="nav-icon fas fa-users"></i>
         <p>Clientes</p>
+    </a>
+</li>
+{{-- 5. Proveedores --}}
+<li class="nav-item">
+    <a href="{{ route('proveedores.index') }}" class="nav-link {{ request()->routeIs('proveedores.*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-truck"></i>
+        <p>Proveedores</p>
     </a>
 </li>
 

@@ -8,6 +8,8 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\AjusteInventarioController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\CompraController;
+use App\Http\Controllers\DTEController;
+use App\Http\Controllers\ProveedorController;
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -46,6 +48,23 @@ Route::resource('facturas', FacturaController::class);
 //    Route::resource('facturas', FacturaController::class)->only(['index', 'create', 'store']);
 
 Route::resource('compras', CompraController::class)->only(['index', 'create', 'store']);
+
+
+//Admin DTE's
+Route::get('/dtes', [DTEController::class, 'index'])->name('dtes.index');
+Route::get('/dtes/{id}/json', [DTEController::class, 'descargarJson'])->name('dtes.descargarJson');
+Route::get('/dtes/{id}/pdf', [DTEController::class, 'verPdf'])->name('dtes.verPdf');
+Route::get('/dtes/descargar-json', [\App\Http\Controllers\DTEController::class, 'descargarJsonLote'])
+     ->name('dtes.descargarJsonLote');
+
+//Contingencia
+Route::get('/dtes/emitirEnContingencia/{id}', [ContingenciaController::class, 'emitirEnContingencia'])->name('dtes.emitirEnContingencia');
+
+
+//Proveedores
+Route::resource('proveedores', ProveedorController::class)->parameters([
+    'proveedores' => 'proveedor'
+]);
 
 });
 
