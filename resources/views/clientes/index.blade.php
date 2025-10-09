@@ -22,8 +22,9 @@
                 @foreach($clientes as $cliente)
                     <tr>
                         <td>{{ $cliente->nombre }}</td>
-                        <td>{{ $cliente->tipo_documento }}</td>
+                        <td>{{ $cliente->correo }}</td>
                         <td>
+                             <a href="{{ route('clientes.show', $cliente->id) }}" class="btn btn-info btn-sm">Ver</a>
                             <a href="{{ route('clientes.edit', $cliente) }}" class="btn btn-sm btn-warning">Editar</a>
                             <form action="{{ route('clientes.destroy', $cliente) }}" method="POST" class="d-inline">
                                 @csrf

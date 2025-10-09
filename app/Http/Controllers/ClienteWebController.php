@@ -47,26 +47,43 @@ class ClienteWebController extends Controller
     return redirect()->route('clientes.index')->with('success', 'Cliente registrado correctamente');
 }
 
-    public function edit(Cliente $cliente)
-    {
-        return view('clientes.edit', compact('cliente'));
-    }
+   public function edit(Cliente $cliente)
+{
+    $actividades = Actividad::orderBy('descripcion')->get();
+    $departamentos = Departamento::orderBy('valor')->get();
+    $municipios = Municipio::orderBy('valor')->get();
 
-    public function update(Request $request, Cliente $cliente)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'tipo_documento' => 'nullable|string',
-            'numero_documento' => 'nullable|string',
-        ]);
+    return view('clientes.edit', compact('cliente', 'actividades', 'departamentos', 'municipios'));
+}
 
-        $cliente->update($request->all());
-        return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente.');
-    }
+   public function update(Request $request, Cliente $cliente)
+{
+    $request->validate([
+        'nombre' => 'nullable|string|max:255',
+        'nombre_comercial' => 'nullable|string|max:255',
+        'nit' => 'nullable|string|max:20',
+        'dui' => 'nullable|string|max:20',
+        'nrc' => 'nullable|string|max:20',
+        'telefono' => 'nullable|string|max:20',
+        'correo' => 'nullable|email|max:255',
+        'actividad_economica_id' => 'nullable|exists:actividades,id',
+        'departamento_id' => 'nullable|exists:departamentos,id',
+        'municipio_id' => 'nullable|exists:municipios,id',
+    ]);
+
+    $cliente->update($request->all());
+
+    return redirect()->route('clientes.index')->with('success', 'Cliente actualizado correctamente');
+}
 
     public function destroy(Cliente $cliente)
     {
         $cliente->delete();
         return redirect()->route('clientes.index')->with('success', 'Cliente eliminado.');
     }
+
+    public function show(Cliente $cliente)
+{
+    return view('clientes.show', compact('cliente'));
+}
 }
