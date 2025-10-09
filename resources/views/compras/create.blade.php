@@ -9,10 +9,20 @@
     <form action="{{ route('compras.store') }}" method="POST">
         @csrf
 
-        <div class="form-group mb-3">
+        <div class="col-md-4 form-group mb-3">
             <label for="fecha">Fecha de compra</label>
             <input type="date" name="fecha" id="fecha" class="form-control" value="{{ date('Y-m-d') }}" required>
         </div>
+
+        <div class="col-md-4 form-group mb-3">
+    <label for="proveedor_id">Proveedor</label>
+    <select name="proveedor_id" id="proveedor_id" class="form-control select2">
+        <option value="">Seleccione un proveedor</option>
+        @foreach ($proveedores as $proveedor)
+            <option value="{{ $proveedor->id }}">{{ $proveedor->nombre }}</option>
+        @endforeach
+    </select>
+</div>
 
         <hr>
 

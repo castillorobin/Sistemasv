@@ -7,6 +7,7 @@ use App\Models\CompraDetalle;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Proveedor;
 
 class CompraController extends Controller
 {
@@ -18,15 +19,17 @@ class CompraController extends Controller
 
     public function create()
     {
-        $productos = Producto::all();
-        return view('compras.create', compact('productos'));
+       $productos = Producto::orderBy('nombre')->get();
+    $proveedores = Proveedor::orderBy('nombre')->get();
+
+    return view('compras.create', compact('productos', 'proveedores'));
     }
 
     public function store(Request $request)
 {
-    // Validación de campos
     $request->validate([
         'fecha' => 'required|date',
+        'proveedor_id' => 'nullable|exists:proveedores,id',
         'productos' => 'required|array|min:1',
         'productos.*.producto_id' => 'required|exists:productos,id',
         'productos.*.cantidad' => 'required|integer|min:1',
@@ -34,22 +37,20 @@ class CompraController extends Controller
     ]);
 
     DB::transaction(function () use ($request) {
-        // Crear la compra base
         $compra = Compra::create([
             'fecha' => $request->fecha,
-            'total' => 0, // se actualiza al final
+            'proveedor_id' => $request->proveedor_id,
+            'total' => 0,
         ]);
 
         $total = 0;
 
-        // Recorrer productos enviados desde el formulario
         foreach ($request->productos as $item) {
             $producto = Producto::findOrFail($item['producto_id']);
             $cantidad = $item['cantidad'];
             $precio = $item['precio'];
             $subtotal = $cantidad * $precio;
 
-            // Crear detalle de compra
             CompraDetalle::create([
                 'compra_id' => $compra->id,
                 'producto_id' => $producto->id,
@@ -58,18 +59,24 @@ class CompraController extends Controller
                 'subtotal' => $subtotal,
             ]);
 
-            // Actualizar stock y precio de costo
-            $producto->stock += $cantidad;
-            $producto->precio_costo = $precio; // usar el último precio como costo actual
-            $producto->save();
+            // Calcular nuevo stock y precio promedio
+            $stock_anterior = $producto->stock ?? 0;
+            $precio_anterior = $producto->precio_costo ?? 0;
+            $nuevo_stock = $stock_anterior + $cantidad;
+
+            $nuevo_precio_costo = $nuevo_stock > 0
+                ? (($stock_anterior * $precio_anterior) + ($cantidad * $precio)) / $nuevo_stock
+                : $precio;
+
+            $producto->update([
+                'stock' => $nuevo_stock,
+                'precio_costo' => $nuevo_precio_costo,
+            ]);
 
             $total += $subtotal;
         }
 
-        // Actualizar total de la compra
-        $compra->update([
-            'total' => $total,
-        ]);
+        $compra->update(['total' => $total]);
     });
 
     return redirect()->route('compras.index')->with('success', 'Compra registrada correctamente.');
