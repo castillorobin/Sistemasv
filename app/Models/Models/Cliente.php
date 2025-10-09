@@ -7,15 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 class Cliente extends Model
 {
     protected $fillable = [
-        'nombre',
-        'tipo_documento',
-        'numero_documento',
-        'nrc',
-        'giro',
-        'telefono',
-        'correo',
-        'direccion',
-        'departamento',
-        'municipio',
+          'nombre',
+    'nombre_comercial',
+    'nit',
+    'dui',
+    'nrc',
+    'telefono',
+    'correo',
+    'actividad_economica_id',
+    'departamento_id',
+    'municipio_id',
     ];
+
+    public function actividadEconomica()
+{
+    return $this->belongsTo(ActividadEconomica::class);
+}
+
+public function departamento()
+{
+    return $this->belongsTo(Departamento::class);
+}
+
+public function municipio()
+{
+    return $this->belongsTo(Municipio::class);
+}
 }
