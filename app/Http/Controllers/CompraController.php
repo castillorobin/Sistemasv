@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Compra;
 use App\Models\CompraDetalle;
 use App\Models\Producto;
+use App\Models\MovimientoCaja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Proveedor;
@@ -27,6 +28,13 @@ class CompraController extends Controller
 
     public function store(Request $request)
 {
+    if (!obtenerCajaAbiertaUsuario()) {
+    return back()->with('error', 'Debe abrir caja antes de realizar esta operación.');
+}
+    $caja = obtenerCajaAbiertaUsuario();
+$factura = null; // <-- declarar aquí
+       
+
     $request->validate([
         'fecha' => 'required|date',
         'proveedor_id' => 'nullable|exists:proveedores,id',
@@ -78,6 +86,19 @@ class CompraController extends Controller
 
         $compra->update(['total' => $total]);
     });
+
+     if ($caja && $factura) {
+            MovimientoCaja::create([
+                'caja_id' => $caja->id,
+                'tipo' => 'egreso',
+                'monto' => $total,
+                'descripcion' => 'Compra registrada - ID: ' . $compra->id,
+                'fecha' => now(),
+                'referencia_id' => $compra->id,
+                'referencia_type' => \App\Models\Compra::class,
+                'user_id' => auth()->id(), // ← este campo es obligatorio
+            ]);
+        } 
 
     return redirect()->route('compras.index')->with('success', 'Compra registrada correctamente.');
 }

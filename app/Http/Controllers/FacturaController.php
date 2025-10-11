@@ -7,6 +7,8 @@ use App\Models\Factura;
 use App\Models\FacturaDetalle;
 use App\Models\Models\Cliente;
 use App\Models\Producto;
+use App\Models\MovimientoCaja;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,20 +32,27 @@ return view('facturas.create', compact('clientes', 'productos'));
 
 public function store(Request $request)
 {
+    if (!obtenerCajaAbiertaUsuario()) {
+        return back()->with('error', 'Debe abrir caja antes de realizar esta operación.');
+    }
+
+    $caja = obtenerCajaAbiertaUsuario();
+    $factura = null; // <-- declarar aquí
+
     $request->validate([
         'cliente_id' => 'required',
         'tipo' => 'required',
         'productos_json' => 'required|string',
     ]);
 
-    DB::transaction(function () use ($request) {
+    DB::transaction(function () use ($request, &$factura) {
         $cliente = Cliente::findOrFail($request->cliente_id);
 
         $factura = Factura::create([
             'cliente_id' => $cliente->id,
             'tipo' => $request->tipo,
             'fecha' => now(),
-            'numero' => 'F'.str_pad(Factura::max('id')+1, 6, '0', STR_PAD_LEFT),
+            'numero' => 'F' . str_pad(Factura::max('id') + 1, 6, '0', STR_PAD_LEFT),
             'total_sin_iva' => 0,
             'iva' => 0,
             'total' => 0,
@@ -85,6 +94,20 @@ public function store(Request $request)
             'total' => $total,
         ]);
     });
+
+    // Aquí ya puedes usar $factura
+    if ($caja && $factura) {
+        MovimientoCaja::create([
+            'caja_id' => $caja->id,
+            'tipo' => 'ingreso',
+            'monto' => $factura->total,
+            'descripcion' => 'Factura emitida - Nº: ' . $factura->numero,
+            'fecha' => now(),
+                'referencia_id' => $factura->id,
+    'referencia_type' => \App\Models\Factura::class,
+    'user_id' => auth()->id(), // ← este campo es obligatorio
+        ]);
+    }
 
     return redirect()->route('facturas.index')->with('success', 'Factura registrada');
 }

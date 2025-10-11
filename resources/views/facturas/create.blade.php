@@ -29,6 +29,17 @@
 <div class="card">
 <div class="card-header">
 <h5>Emitir Factura</h5>
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
 </div>
 <div class="card-body">
 <form action="{{ route('facturas.store') }}" method="POST">

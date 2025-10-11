@@ -5,7 +5,17 @@
 @section('content')
 <div class="container">
     <h2>Registrar Compra</h2>
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
 
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
     <form action="{{ route('compras.store') }}" method="POST">
         @csrf
 

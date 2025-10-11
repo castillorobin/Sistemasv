@@ -10,6 +10,7 @@ use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\CompraController;
 use App\Http\Controllers\DTEController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\CajaController;
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -70,6 +71,9 @@ Route::resource('proveedores', ProveedorController::class)->parameters([
 ]);
 
 });
+
+//Administrar Cajas
+Route::resource('cajas', CajaController::class)->only(['index', 'create', 'store']);
 
 
 
