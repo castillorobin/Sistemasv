@@ -16,6 +16,39 @@ class CajaController extends Controller
         return view('cajas.index', compact('cajas'));
     }
 
+    public function movimientos(Caja $caja)
+{
+    $caja->load('movimientos'); // Carga la relación de movimientos
+    return view('cajas.movimientos', compact('caja'));
+}
+
+public function cerrar(Caja $caja)
+{
+    // Validación de que la caja pertenece al usuario autenticado
+    if ($caja->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    // Si ya fue cerrada, no hacer nada
+    if ($caja->fecha_cierre) {
+        return back()->with('info', 'La caja ya está cerrada.');
+    }
+
+    // Calcular total de movimientos (ingresos - egresos)
+    $totalMovimientos = $caja->movimientos->reduce(function ($carry, $mov) {
+        return $carry + ($mov->tipo === 'ingreso' ? $mov->monto : -$mov->monto);
+    }, 0);
+
+    // Guardar fecha y monto final
+    $caja->update([
+        'fecha_cierre' => now(),
+        'monto_final' => $caja->monto_inicial + $totalMovimientos,
+        'estado' => 'cerrada',
+    ]);
+
+    return redirect()->route('cajas.index')->with('success', 'Caja cerrada exitosamente.');
+}
+
     public function create()
     {
         return view('cajas.create');

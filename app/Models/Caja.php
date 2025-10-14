@@ -24,4 +24,9 @@ class Caja extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function usuario()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 }

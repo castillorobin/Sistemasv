@@ -74,7 +74,8 @@ Route::resource('proveedores', ProveedorController::class)->parameters([
 
 //Administrar Cajas
 Route::resource('cajas', CajaController::class)->only(['index', 'create', 'store']);
-
+Route::get('cajas/{caja}/movimientos', [CajaController::class, 'movimientos'])->name('cajas.movimientos');
+Route::post('/cajas/{caja}/cerrar', [CajaController::class, 'cerrar'])->name('cajas.cerrar');
 
 
 require __DIR__.'/auth.php';

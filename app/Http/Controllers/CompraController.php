@@ -29,11 +29,12 @@ class CompraController extends Controller
     public function store(Request $request)
 {
     if (!obtenerCajaAbiertaUsuario()) {
-    return back()->with('error', 'Debe abrir caja antes de realizar esta operación.');
-}
+        return back()->with('error', 'Debe abrir caja antes de realizar esta operación.');
+    }
+
     $caja = obtenerCajaAbiertaUsuario();
-$factura = null; // <-- declarar aquí
-       
+    $compra = null; // <--- declarar aquí para usarla después
+    $total = 0;
 
     $request->validate([
         'fecha' => 'required|date',
@@ -44,14 +45,12 @@ $factura = null; // <-- declarar aquí
         'productos.*.precio' => 'required|numeric|min:0',
     ]);
 
-    DB::transaction(function () use ($request) {
+    DB::transaction(function () use ($request, &$compra, &$total) {
         $compra = Compra::create([
             'fecha' => $request->fecha,
             'proveedor_id' => $request->proveedor_id,
             'total' => 0,
         ]);
-
-        $total = 0;
 
         foreach ($request->productos as $item) {
             $producto = Producto::findOrFail($item['producto_id']);
@@ -67,7 +66,6 @@ $factura = null; // <-- declarar aquí
                 'subtotal' => $subtotal,
             ]);
 
-            // Calcular nuevo stock y precio promedio
             $stock_anterior = $producto->stock ?? 0;
             $precio_anterior = $producto->precio_costo ?? 0;
             $nuevo_stock = $stock_anterior + $cantidad;
@@ -87,18 +85,19 @@ $factura = null; // <-- declarar aquí
         $compra->update(['total' => $total]);
     });
 
-     if ($caja && $factura) {
-            MovimientoCaja::create([
-                'caja_id' => $caja->id,
-                'tipo' => 'egreso',
-                'monto' => $total,
-                'descripcion' => 'Compra registrada - ID: ' . $compra->id,
-                'fecha' => now(),
-                'referencia_id' => $compra->id,
-                'referencia_type' => \App\Models\Compra::class,
-                'user_id' => auth()->id(), // ← este campo es obligatorio
-            ]);
-        } 
+    // ✅ Aquí sí se cumple porque $compra ya está definido correctamente
+    if ($caja && $compra) {
+        MovimientoCaja::create([
+            'caja_id' => $caja->id,
+            'tipo' => 'egreso',
+            'monto' => $total,
+            'descripcion' => 'Compra registrada - ID: ' . $compra->id,
+            'fecha' => now(),
+            'referencia_id' => $compra->id,
+            'referencia_type' => \App\Models\Compra::class,
+            'user_id' => auth()->id(),
+        ]);
+    }
 
     return redirect()->route('compras.index')->with('success', 'Compra registrada correctamente.');
 }
