@@ -11,6 +11,7 @@ use App\Models\MovimientoCaja;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\DTEService;
 
 
 class FacturaController extends Controller
@@ -108,8 +109,24 @@ public function store(Request $request)
     'user_id' => auth()->id(), // ← este campo es obligatorio
         ]);
     }
+   // $detalles = FacturaDetalle::where('factura_id', $factura->id)->get();
+   $detalles = \App\Models\FacturaDetalle::with('producto')
+    ->where('factura_id', $factura->id)
+    ->get()
+    ->map(function ($detalle) {
+        return (object)[
+            'cantidad' => $detalle->cantidad,
+            'descripcion' => $detalle->producto->nombre,
+            'preciouni' => $detalle->precio_unitario,
+            'coticode' => $detalle->factura_id, // opcional, si lo usas
+            'id' => $detalle->id, // opcional, si lo usas
+        ];
+    });
+    $cliente = Cliente::where('id', $factura->cliente_id)->get();
+    $actual = $factura->created_at;
+return view('facturas.generardteconsumidor', compact('actual', 'detalles', 'cliente'));
+    //return redirect()->route('facturas.index')->with('success', 'Factura registrada');
 
-    return redirect()->route('facturas.index')->with('success', 'Factura registrada');
 }
 
 public function show(Factura $factura)
