@@ -124,7 +124,12 @@ public function store(Request $request)
     });
     $cliente = Cliente::where('id', $factura->cliente_id)->get();
     $actual = $factura->created_at;
-return view('facturas.generardteconsumidor', compact('actual', 'detalles', 'cliente'));
+    if ($request->tipo == "consumidor") {
+        return view('facturas.generardteconsumidor', compact('actual', 'detalles', 'cliente'));
+    }elseif ($request->tipo == "ccf") {
+         return view('facturas.generardteccf', compact('actual', 'detalles', 'cliente'));
+    }
+
     //return redirect()->route('facturas.index')->with('success', 'Factura registrada');
 
 }
