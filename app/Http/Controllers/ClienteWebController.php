@@ -43,6 +43,8 @@ class ClienteWebController extends Controller
         'municipio_id' => 'nullable|exists:municipios,id',
     ]);
 
+    
+
     Cliente::create($request->all());
 
     return redirect()->route('clientes.index')->with('success', 'Cliente registrado correctamente');

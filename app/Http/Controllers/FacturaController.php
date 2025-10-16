@@ -12,6 +12,7 @@ use App\Models\MovimientoCaja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\DTEService;
+use App\Models\Actividad;
 
 
 class FacturaController extends Controller
@@ -110,16 +111,19 @@ public function store(Request $request)
         ]);
     }
    // $detalles = FacturaDetalle::where('factura_id', $factura->id)->get();
-   $detalles = \App\Models\FacturaDetalle::with('producto')
+   $detalles = FacturaDetalle::with('producto')
     ->where('factura_id', $factura->id)
     ->get()
     ->map(function ($detalle) {
+        $total = $detalle->cantidad * $detalle->precio_unitario;
         return (object)[
             'cantidad' => $detalle->cantidad,
             'descripcion' => $detalle->producto->nombre,
+            'precio_unitario' => $detalle->precio_unitario,
             'preciouni' => $detalle->precio_unitario,
-            'coticode' => $detalle->factura_id, // opcional, si lo usas
-            'id' => $detalle->id, // opcional, si lo usas
+            'total' => $total,
+            'id' => $detalle->id,
+            'coticode' => $detalle->factura_id,
         ];
     });
     $cliente = Cliente::where('id', $factura->cliente_id)->get();
@@ -127,7 +131,13 @@ public function store(Request $request)
     if ($request->tipo == "consumidor") {
         return view('facturas.generardteconsumidor', compact('actual', 'detalles', 'cliente'));
     }elseif ($request->tipo == "ccf") {
-         return view('facturas.generardteccf', compact('actual', 'detalles', 'cliente'));
+
+        $codactividad = $cliente[0]->actividad_economica_id;
+
+        $actividad = Actividad::where('codigo', $codactividad)->get();
+        $actividad_descripcion = $actividad[0]->descripcion ?? 'No especificada';
+        
+         return view('facturas.generardteccf', compact('actual', 'detalles', 'cliente', 'actividad_descripcion'));
     }
 
     //return redirect()->route('facturas.index')->with('success', 'Factura registrada');

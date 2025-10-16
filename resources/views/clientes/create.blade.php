@@ -67,7 +67,7 @@
     <select name="actividad_economica_id" id="actividad_economica_id" class="form-control select2  w-100">
         <option value="">Seleccione</option>
         @foreach($actividades as $actividad)
-            <option value="{{ $actividad->id }}">
+            <option value="{{ $actividad->codigo }}">
                 {{ $actividad->codigo }} - {{ $actividad->descripcion }}
             </option>
         @endforeach
@@ -79,7 +79,7 @@
             <select name="departamento_id" class="form-control">
                 <option value="">Seleccione</option>
                 @foreach($departamentos as $dpto)
-                    <option value="{{ $dpto->id }}">{{ $dpto->valor }}</option>
+                    <option value="{{ $dpto->codigo }}">{{ $dpto->valor }}</option>
                 @endforeach
             </select>
         </div>
@@ -89,7 +89,7 @@
             <select name="municipio_id" class="form-control">
                 <option value="">Seleccione</option>
                 @foreach($municipios as $muni)
-                    <option value="{{ $muni->id }}">{{ $muni->valor }}</option>
+                    <option value="{{ $muni->codigo }}">{{ $muni->valor }}</option>
                 @endforeach
             </select>
         </div>
