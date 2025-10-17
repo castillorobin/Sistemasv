@@ -287,12 +287,12 @@ function crearDTE($fecha_actual, $hora_actual, $detalles, $cliente, $actividad_d
     $dte->receptor->nrc = $cliente[0]->nrc;
     $dte->receptor->nombre = $cliente[0]->nombre;
     $dte->receptor->nombreComercial = $cliente[0]->nombre_comercial;
-    $dte->receptor->codActividad = "69200"; //$cliente[0]->actividad_economica_id;
-    $dte->receptor->descActividad = "Actividades de contabilidad, teneduría de libros y auditoría; asesoramiento en materia de impuestos n.c.p.";//$actividad_descripcion;
+    $dte->receptor->codActividad = $cliente[0]->actividad_economica_id;
+    $dte->receptor->descActividad = $actividad_descripcion;
     $dte->receptor->direccion = new Direccion();
     $dte->receptor->direccion->departamento = "03";//$cliente[0]->departamento;
     $dte->receptor->direccion->municipio = "06";//$cliente[0]->municipio;
-    $dte->receptor->direccion->complemento = $cliente[0]->direccion;
+    $dte->receptor->direccion->complemento = "Avenida";//$cliente[0]->direccion;
     $dte->receptor->telefono = $cliente[0]->telefono;
     $dte->receptor->correo = $cliente[0]->correo;
 
