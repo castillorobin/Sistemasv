@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 
 
@@ -175,6 +176,94 @@ public function descargarJsonLote(Request $request)
 }
 
 
+public function anular(Request $request, DocumentoDTE $dte)
+{
+    $motivo = $request->motivo ?? 'Anulación solicitada';
+    $codigoGeneracion = $dte->codigo_generacion;
+     // 1. Armar el JSON exacto como lo hiciste en Postman
+     $legible = json_decode(Storage::get("dtes_json/legible_{$codigoGeneracion}.json"), true);
+//dd($legible);
+    $dteJson = [
+        "identificacion" => [
+            "version" => 2,
+            "ambiente" => "00",
+            "codigoGeneracion" => strtoupper(Str::uuid()->toString()),
+            "fecAnula" => now()->format('Y-m-d'),
+            "horAnula" => now()->format('H:i:s'),
+        ],
+        "emisor" => [
+            "nit" => "008688551",
+            "nombre" => "VILMA JANNET GODOY MENDOZA",
+            "tipoEstablecimiento" => "02",
+            "nomEstablecimiento" => "VILMA JANNET GODOY MENDOZA",
+            "codEstableMH" => null,
+            "codEstable" => "B001",
+            "codPuntoVentaMH" => null,
+            "codPuntoVenta" => "P001",
+            "telefono" => "2429-0920",
+            "correo" => "vilmademendoza71@gmail.com"
+        ],
+        "documento" => [
+            "tipoDte" => $legible['identificacion']['tipoDte'],
+            "codigoGeneracion" => $legible['identificacion']['codigoGeneracion'],
+            "selloRecibido" => $legible['selloRecibido'] ?? null,
+            "numeroControl" => $legible['identificacion']['numeroControl'],
+            "fecEmi" => $legible['identificacion']['fecEmi'],
+            "montoIva" => $legible['resumen']['totalIva'],
+            "codigoGeneracionR" => null,
+            "tipoDocumento" => $legible['receptor']['tipoDocumento'],
+            "numDocumento" => $legible['receptor']['numDocumento'],
+            "nombre" => $legible['receptor']['nombre'],
+            "telefono" => $legible['receptor']['telefono'] ?? null,
+            "correo" => $legible['receptor']['correo'] ?? null,
+        ],
+        "motivo" => [
+            "tipoAnulacion" => 2,
+            "motivoAnulacion" => $motivo,
+            "nombreResponsable" => "ADMIN",
+            "tipDocResponsable" => "13",
+            "numDocResponsable" => "000000000",
+            "nombreSolicita" => "ADMIN",
+            "tipDocSolicita" => "13",
+            "numDocSolicita" => "000000000"
+        ]
+    ];
+
+    $payload = [
+        "Usuario" => "02022504711049",
+        "Password" => "Camioneta2025.",
+        "Ambiente" => "00",
+        "DteJson" => json_encode($dteJson),
+        "Nit" => "008688551",
+        "PasswordPrivado" => "Camioneta2025"
+    ];
 
 
+
+    try {
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])->post('http://98.89.90.33:7122/api/anular-dte', $payload);
+
+        $result = $response->json();
+
+        if (!$response->successful()) {
+            return back()->with('error', 'Error en envío de DTE (anulación): ' . json_encode($result));
+        }
+
+        // Opcional: guardar confirmación de anulación
+        $dte->update([
+            'estado' => 'anulado',
+            'fecha_anulacion' => now(),
+        ]);
+
+        return back()->with('success', 'DTE anulado correctamente.');
+
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al anular DTE: ' . $e->getMessage());
+    }
 }
+}
+
+
+
