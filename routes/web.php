@@ -61,6 +61,8 @@ Route::get('/dtes/{id}/pdf', [DTEController::class, 'verPdf'])->name('dtes.verPd
 Route::get('/dtes/descargar-json', [\App\Http\Controllers\DTEController::class, 'descargarJsonLote'])
      ->name('dtes.descargarJsonLote');
 
+     Route::post('/dtes/{dte}/anular', [App\Http\Controllers\DTEController::class, 'anular'])->name('dtes.anular');
+
 //Contingencia
 Route::get('/dtes/emitirEnContingencia/{id}', [ContingenciaController::class, 'emitirEnContingencia'])->name('dtes.emitirEnContingencia');
 

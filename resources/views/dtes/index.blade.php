@@ -43,12 +43,16 @@
 <td>{{ $dte->codigo_generacion }}</td>
 <td>{{ $dte->created_at->format('d/m/Y H:i') }}</td>
 <td>
+    <a href="{{ route('dtes.verPdf', $dte->id) }}" target="_blank" class="btn btn-sm btn-info">Ver PDF</a>
 
-<a href="{{ route('dtes.verPdf', $dte->id) }}" target="_blank" class="btn btn-sm btn-info">Ver PDF</a>
+    @if($dte->json_legible_path || $dte->json_firmado_path)
+        <a href="{{ route('dtes.descargarJson', $dte->id) }}" class="btn btn-sm btn-success">Descargar JSON</a>
+    @endif
 
-@if($dte->json_legible_path || $dte->json_firmado_path)
-<a href="{{ route('dtes.descargarJson', $dte->id) }}" class="btn btn-sm btn-success">Descargar JSON</a>
-@endif
+    <form action="{{ route('dtes.anular', $dte->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Estás seguro de que deseas anular este DTE?');">
+        @csrf
+        <button type="submit" class="btn btn-sm btn-danger">Anular</button>
+    </form>
 </td>
 </tr>
 @endforeach

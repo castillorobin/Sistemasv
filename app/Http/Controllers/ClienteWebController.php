@@ -29,6 +29,7 @@ class ClienteWebController extends Controller
 
     public function store(Request $request)
 {
+
     $request->validate([
         'nombre' => 'nullable|string|max:255',
         'nombre_comercial' => 'nullable|string|max:255',
@@ -38,9 +39,9 @@ class ClienteWebController extends Controller
         'telefono' => 'nullable|string|max:20',
         'direccion' => 'nullable|string|max:255',
         'correo' => 'nullable|email|max:255',
-        'actividad_economica_id' => 'nullable|exists:actividades,id',
-        'departamento_id' => 'nullable|exists:departamentos,id',
-        'municipio_id' => 'nullable|exists:municipios,id',
+        'actividad_economica_id' => 'nullable|string|max:255',
+        'departamento_id' => 'nullable|string|max:255',
+        'municipio_id' => 'nullable|string|max:255',
     ]);
 
     
