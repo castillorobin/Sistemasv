@@ -20,86 +20,106 @@ class NotaCreditoController extends Controller
             $hora = now()->format('H:i:s');
             $codigoGeneracionNC = strtoupper(Str::uuid());
 
-            // 1. Cuerpo del documento
-            $cuerpo = $original['cuerpoDocumento'] ?? [];
+            // Permitir seleccionar si se emite nota total o parcial
+            $montoParcial = floatval($request->input('monto', 0));
+            $esTotal = $montoParcial === 0;
 
-            // 2. Resumen de la nota de crédito
-            $totalGravada = $original['resumen']['totalGravada'] ?? 0;
-            $totalIva = $original['resumen']['totalIva'] ?? 0;
-            $totalPagar = $original['resumen']['totalPagar'] ?? 0;
+            $totalGravadaOriginal = floatval($original['resumen']['totalGravada'] ?? 0);
+            $totalIvaOriginal = floatval($original['resumen']['tributos'][0]['valor'] ?? 0);
+            $totalOriginal = $totalGravadaOriginal + $totalIvaOriginal;
 
-            $resumen = [
-                'totalNoSuj' => 0,
-                'totalExenta' => 0,
-                'totalGravada' => round($totalGravada, 2),
-                'subTotalVentas' => round($totalGravada, 2),
-                'descuNoSuj' => 0,
-                'descuExenta' => 0,
-                'descuGravada' => 0,
-                'porcentajeDescuento' => 0,
-                'totalDescu' => 0,
-                'subTotal' => round($totalGravada, 2),
-                'ivaRete1' => 0,
-                'reteRenta' => 0,
-                'montoTotalOperacion' => round($totalPagar, 2),
-                'totalNoGravado' => 0,
-                'totalPagar' => round($totalPagar, 2),
-                'totalLetras' => $original['resumen']['totalLetras'],
-                'saldoFavor' => 0,
-                'condicionOperacion' => 1,
-                'pagos' => [
-                    [
-                        "codigo" => "01",
-                        "montoPago" => round($totalPagar, 2),
-                        "referencia" => "0000",
-                        "periodo" => null,
-                        "plazo" => null
-                    ]
-                ],
-                'tributos' => [
-                    [
-                        "codigo" => "20",
-                        "descripcion" => "Impuesto al Valor Agregado 13%",
-                        "valor" => round($totalIva, 2)
-                    ]
-                ],
-                'numPagoElectronico' => null,
-                'totalIva' => round($totalIva, 2)
-            ];
+            $base = $esTotal ? $totalGravadaOriginal : round($montoParcial / 1.13, 2);
+            $iva = round($base * 0.13, 2);
+            $total = $base + $iva;
 
             $nota = [
                 'identificacion' => [
-                    'version' => 1,
+                    'version' => 3,
                     'ambiente' => '00',
                     'tipoDte' => '05',
+                    'numeroControl' => 'DTE-05-B001P001-' . str_pad(mt_rand(1, 999999999999999), 15, '0', STR_PAD_LEFT),
                     'codigoGeneracion' => $codigoGeneracionNC,
-                    'numeroControl' => "DTE-05-M001P001-" . strtoupper(Str::uuid()),
                     'tipoModelo' => 1,
                     'tipoOperacion' => 1,
+                    'tipoContingencia' => null,
+                    'motivoContin' => null,
                     'fecEmi' => $fecha,
                     'horEmi' => $hora,
-                    'tipoMoneda' => 'USD',
+                    'tipoMoneda' => 'USD'
                 ],
-                'emisor' => $original['emisor'],
-                'receptor' => $original['receptor'],
-                'documentoRelacionado' => [
-                    [
-                        'tipoDocumento' => $original['identificacion']['tipoDte'],
-                        'tipoGeneracion' => 1,
-                        'numeroGeneracion' => $original['identificacion']['codigoGeneracion'],
-                        'numeroDocumento' => $original['identificacion']['numeroControl'],
-                        'fechaEmision' => $original['identificacion']['fecEmi'],
-                    ]
+                'documentoRelacionado' => [[
+                    'tipoDocumento' => $original['identificacion']['tipoDte'],
+                    'tipoGeneracion' => 1,
+                    'numeroDocumento' => $original['identificacion']['numeroControl'],
+                    'fechaEmision' => $original['identificacion']['fecEmi'],
+                ]],
+                'emisor' => [
+                    'nit' => $original['emisor']['nit'],
+                    'nrc' => $original['emisor']['nrc'],
+                    'nombre' => $original['emisor']['nombre'],
+                    'codActividad' => $original['emisor']['codActividad'],
+                    'descActividad' => $original['emisor']['descActividad'],
+                    'nombreComercial' => $original['emisor']['nombreComercial'],
+                    'tipoEstablecimiento' => $original['emisor']['tipoEstablecimiento'],
+                    'direccion' => $original['emisor']['direccion'],
+                    'telefono' => $original['emisor']['telefono'],
+                    'correo' => $original['emisor']['correo']
+                ],
+                'receptor' => [
+                    'nit' => $original['receptor']['nit'] ?? '00000000000000',
+                    'nrc' => $original['receptor']['nrc'] ?? null,
+                    'nombre' => $original['receptor']['nombre'] ?? 'CONSUMIDOR FINAL',
+                    'codActividad' => $original['receptor']['codActividad'] ?? '000000',
+                    'descActividad' => $original['receptor']['descActividad'] ?? 'NO APLICA',
+                    'direccion' => $original['receptor']['direccion'] ?? [
+                        'departamento' => 'SAN SALVADOR',
+                        'municipio' => 'SAN SALVADOR',
+                        'complemento' => 'NO DEFINIDO'
+                    ],
+                    'telefono' => $original['receptor']['telefono'] ?? '0000-0000',
+                    'correo' => $original['receptor']['correo'] ?? 'correo@ejemplo.com',
+                    'nombreComercial' => $original['receptor']['nombreComercial'] ?? 'CONSUMIDOR FINAL'
                 ],
                 'ventaTercero' => null,
-                'cuerpoDocumento' => $cuerpo,
-                'resumen' => $resumen,
+                'cuerpoDocumento' => [[
+                    'numItem' => 1,
+                    'tipoItem' => 1,
+                    'numeroDocumento' => null,
+                    'cantidad' => 1,
+                    'codigo' => 'NC01',
+                    'uniMedida' => 59,
+                    'descripcion' => $esTotal ? 'Nota de crédito por anulación total' : 'Nota de crédito parcial',
+                    'precioUni' => -$base,
+                    'montoDescu' => 0.00,
+                    'ventaNoSuj' => 0.00,
+                    'ventaExenta' => 0.00,
+                    'ventaGravada' => -$base,
+                    'tributos' => [[
+                        'codigo' => '20',
+                        'descripcion' => 'IVA',
+                        'valor' => -$iva
+                    ]]
+                ]],
+                'resumen' => [
+                    'totalNoSuj' => 0.00,
+                    'totalExenta' => 0.00,
+                    'totalGravada' => -$base,
+                    'subTotalVentas' => -$base,
+                    'ivaRete1' => 0.00,
+                    'reteRenta' => 0.00,
+                    'montoTotalOperacion' => -$total,
+                    'totalLetras' => 'MENOS ' . strtoupper($this->numeroALetras($total)),
+                    'condicionOperacion' => 1,
+                    'tributos' => [[
+                        'codigo' => '20',
+                        'descripcion' => 'IVA',
+                        'valor' => -$iva
+                    ]],
+                ],
                 'extension' => null,
-                'otrosDocumentos' => null,
-                'apendice' => null,
+                'apendice' => null
             ];
 
-            // Envío a API
             $payload = [
                 "Usuario" => "02022504711049",
                 "Password" => "Camioneta2025.",
@@ -110,7 +130,7 @@ class NotaCreditoController extends Controller
                 "TipoDte" => '05',
                 "CodigoGeneracion" => $codigoGeneracionNC,
                 "NumControl" => $nota['identificacion']['numeroControl'],
-                "VersionDte" => 1,
+                "VersionDte" => 3,
                 "CorreoCliente" => $nota['receptor']['correo'] ?? null
             ];
 
@@ -123,7 +143,6 @@ class NotaCreditoController extends Controller
 
             $respuestaAPI = $response->json();
 
-            // Guardar en base de datos
             DocumentoDTE::create([
                 'sello_recibido' => $respuestaAPI['selloRecibido'] ?? null,
                 'codigo_generacion' => $codigoGeneracionNC,
@@ -145,20 +164,88 @@ class NotaCreditoController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Error al emitir nota de crédito: ' . $e->getMessage());
         }
+
+
+       
     }
 
     public function formEmitir(DocumentoDTE $dte)
+    {
+        return view('dtes.emitir', compact('dte'));
+    }
+
+     private function numeroALetras($numero)
 {
-    // Verificar que el DTE no esté anulado
-    if ($dte->estado === 'anulado') {
-        return redirect()->back()->with('error', 'No se puede emitir nota de crédito para un DTE anulado.');
+    $unidad = [
+        '', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve',
+        'diez', 'once', 'doce', 'trece', 'catorce', 'quince',
+        'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte'
+    ];
+
+    $decenas = [
+        '', '', 'veinti', 'treinta', 'cuarenta', 'cincuenta',
+        'sesenta', 'setenta', 'ochenta', 'noventa'
+    ];
+
+    $centenas = [
+        '', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos',
+        'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'
+    ];
+
+    if ($numero == 0) return 'Cero dólares 00/100';
+
+    $entero = floor($numero);
+    $centavos = round(($numero - $entero) * 100);
+
+    $letras = '';
+
+    if ($entero >= 1000000) {
+        $millones = floor($entero / 1000000);
+        $letras .= $this->numeroALetras($millones) . ' millón' . ($millones > 1 ? 'es' : '') . ' ';
+        $entero %= 1000000;
     }
 
-    // Verificar que el DTE sea de tipo válido para generar NC
-    if (!in_array($dte->tipo_dte, ['01', '03'])) { // 01 = Consumidor Final, 03 = Crédito Fiscal
-        return redirect()->back()->with('error', 'Solo se pueden generar notas de crédito para DTE tipo 01 o 03.');
+    if ($entero >= 1000) {
+        $miles = floor($entero / 1000);
+        if ($miles == 1) {
+            $letras .= 'mil ';
+        } else {
+            $letras .= $this->numeroALetras($miles) . ' mil ';
+        }
+        $entero %= 1000;
     }
 
-    return view('dtes.emitir', compact('dte'));
+    if ($entero > 0) {
+        if ($entero == 100) {
+            $letras .= 'cien';
+        } else {
+            $c = floor($entero / 100);
+            $d = floor(($entero % 100) / 10);
+            $u = $entero % 10;
+
+            $letras .= $centenas[$c];
+
+            if ($d == 1 || ($d == 2 && $u == 0)) {
+                $letras .= ($c > 0 ? ' ' : '') . $unidad[$d * 10 + $u];
+            } elseif ($d == 2) {
+                $letras .= 'i' . $unidad[$u];
+            } elseif ($d > 2) {
+                $letras .= ($c > 0 ? ' ' : '') . $decenas[$d];
+                if ($u > 0) {
+                    $letras .= ' y ' . $unidad[$u];
+                }
+            } elseif ($u > 0) {
+                $letras .= ($c > 0 ? ' ' : '') . $unidad[$u];
+            }
+        }
+    }
+
+    $letras = trim(ucfirst($letras)) . ' dólares';
+    $letras .= ' con ' . str_pad($centavos, 2, '0', STR_PAD_LEFT) . '/100';
+
+    return $letras;
 }
+    
 }
+
+// Asegúrate de tener disponible la función "numeroALetras" en algún helper o controlador.
