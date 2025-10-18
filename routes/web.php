@@ -11,6 +11,7 @@ use App\Http\Controllers\CompraController;
 use App\Http\Controllers\DTEController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\CajaController;
+use App\Http\Controllers\NotaCreditoController;
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -61,7 +62,11 @@ Route::get('/dtes/{id}/pdf', [DTEController::class, 'verPdf'])->name('dtes.verPd
 Route::get('/dtes/descargar-json', [\App\Http\Controllers\DTEController::class, 'descargarJsonLote'])
      ->name('dtes.descargarJsonLote');
 
-     Route::post('/dtes/{dte}/anular', [App\Http\Controllers\DTEController::class, 'anular'])->name('dtes.anular');
+Route::post('/dtes/{dte}/anular', [App\Http\Controllers\DTEController::class, 'anular'])->name('dtes.anular');
+//Route::post('/dtes/{dte}/nota-credito', [NotaCreditoController::class, 'emitirDesdeDTE'])->name('dtes.emitirNotaCredito');
+
+Route::get('/notas-credito/emitir/{dte}', [NotaCreditoController::class, 'formEmitir'])->name('notas-credito.formEmitir');
+Route::post('/notas-credito/emitir/{dte}', [NotaCreditoController::class, 'emitirDesdeDTE'])->name('notas-credito.emitirDesdeDTE');
 
 //Contingencia
 Route::get('/dtes/emitirEnContingencia/{id}', [ContingenciaController::class, 'emitirEnContingencia'])->name('dtes.emitirEnContingencia');

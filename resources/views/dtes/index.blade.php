@@ -73,6 +73,8 @@
     <button type="submit" class="btn btn-sm btn-danger">Anular</button>
 </form>
     @endif
+
+    <a href="{{ route('notas-credito.formEmitir', $dte->id) }}" class="btn btn-sm btn-warning">Nota de Crédito</a>
 </td>
 </tr>
 @endforeach
