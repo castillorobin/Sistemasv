@@ -139,6 +139,9 @@ public function store(Request $request)
         
          return view('facturas.generardteccf', compact('actual', 'detalles', 'cliente', 'actividad_descripcion'));
     }
+    if ($request->tipo == 'sujeto_excluido') {
+        return view('facturas.generardtesujetoexcluido', compact('actual', 'detalles', 'cliente'));
+    }
 
     //return redirect()->route('facturas.index')->with('success', 'Factura registrada');
 
