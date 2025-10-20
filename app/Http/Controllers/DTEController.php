@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use App\Models\Proveedor;
 
 
 
@@ -262,6 +263,12 @@ public function anular(Request $request, DocumentoDTE $dte)
     } catch (\Exception $e) {
         return back()->with('error', 'Error al anular DTE: ' . $e->getMessage());
     }
+}
+
+public function creandosujeto()
+{
+    $proveedores = Proveedor::all();
+    return view('facturas.createsujeto', compact('proveedores'));
 }
 }
 

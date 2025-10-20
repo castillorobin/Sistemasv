@@ -63,7 +63,7 @@
     <select id="cliente_id" name="tipo" class="form-control" required>
        <option value="consumidor">Consumidor Final</option>
 <option value="ccf">Crédito Fiscal</option>
- <option value="sujeto_excluido">Sujeto Excluido</option> <!-- NUEVO -->
+ 
     </select>
 </div>
 

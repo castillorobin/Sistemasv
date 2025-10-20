@@ -88,13 +88,35 @@
     </a>
 </li>
 
+
 {{-- 4. Compras --}}
-<li class="nav-item">
-    <a href="{{ route('compras.index') }}" class="nav-link {{ request()->routeIs('compras.index') ? 'active' : '' }}">
+<li class="nav-item has-treeview">
+    <a href="#" class="nav-link">
         <i class="nav-icon fas fa-shopping-bag"></i>
-        <p>Compras</p>
+        <p>
+            Compras
+            <i class="right fas fa-angle-left"></i>
+        </p>
     </a>
+
+
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="{{ route('compras.index') }}" class="nav-link {{ request()->routeIs('compras.index') ? 'active' : '' }}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Registrar Compras</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/dtes/sujeto" class="nav-link ">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Sujeto Excluido</p>
+            </a>
+        </li>
+    </ul>
 </li>
+
+
 
 {{-- 5. Clientes --}}
 <li class="nav-item">

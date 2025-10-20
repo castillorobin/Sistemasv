@@ -54,6 +54,8 @@ Route::resource('facturas', FacturaController::class);
 
 Route::resource('compras', CompraController::class)->only(['index', 'create', 'store']);
 
+Route::get('dtes/sujeto', [DTEController::class, 'creandosujeto'])->name('admin.crearsujeto');
+Route::post('/facturas/sujeto-excluido', [FacturaController::class, 'generarSujetoExcluido'])->name('facturas.sujeto_excluido.generar');
 
 //Admin DTE's
 Route::get('/dtes', [DTEController::class, 'index'])->name('dtes.index');

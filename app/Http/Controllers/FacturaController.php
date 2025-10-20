@@ -8,6 +8,8 @@ use App\Models\FacturaDetalle;
 use App\Models\Models\Cliente;
 use App\Models\Producto;
 use App\Models\MovimientoCaja;
+use App\Models\Proveedor;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +31,42 @@ public function create()
 $clientes = Cliente::all();
 $productos = Producto::all();
 return view('facturas.create', compact('clientes', 'productos'));
+}
+public function createSujetoExcluido()
+{
+    
+$proveedores = Proveedor::all();
+
+return view('facturas.create_sujeto_excluido', compact('proveedores'));
+}
+
+public function crearsujeto()
+{
+    $proveedores = Proveedor::all();
+    return view('facturas.createsujeto', compact('proveedores'));
+}
+
+public function generarSujetoExcluido()
+{
+     if (!obtenerCajaAbiertaUsuario()) {
+        return back()->with('error', 'Debe abrir caja antes de realizar esta operación.');
+    }
+
+    $caja = obtenerCajaAbiertaUsuario();
+    $factura = null; // <-- declarar aquí
+
+    $request->validate([
+        'fecha' => 'required|date',
+        'proveedor_id' => 'nullable|exists:proveedores,id',
+        'productos' => 'required|array|min:1',
+        'productos.*.descripcion' => 'required|string|min:3|max:255',
+        'productos.*.cantidad' => 'required|integer|min:1',
+        'productos.*.precio' => 'required|numeric|min:0',
+    ]);
+
+    
+
+
 }
 
 
