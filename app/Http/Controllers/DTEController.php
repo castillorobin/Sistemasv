@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use App\Models\Proveedor;
 use App\Models\Producto;
+//use Barryvdh\DomPDF\Facade\Pdf;
 
 
 
