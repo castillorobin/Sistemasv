@@ -202,8 +202,6 @@
             <div class="grid-2">
                 <div>SUMAS:</div>
                 <div class="text-right">${{ $fmt($subTotal ?: $totalGravada) }}</div>
-                <div>Turismo 5%:</div>
-                <div class="text-right">${{ $fmt($turismo) }}</div>
                 <div class="fw-bold">TOTAL A PAGAR:</div>
                 <div class="text-right fw-bold">${{ $fmt($totalPagar) }}</div>
             </div>
