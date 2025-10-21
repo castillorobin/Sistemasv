@@ -177,6 +177,7 @@ class ItemDocumento {
     public $descripcion;
     public $precioUni;
     public $montoDescu;
+    //public $reteRenta;
    // public $ventaNoSuj;
     //public $ventaExenta;
     //public $ventaGravada;
@@ -294,6 +295,7 @@ $cuerpo = [];
 $totalGravada = 0;
 $itemnum = 1;
 $totaliv = 0;
+$renta = 0;
     foreach ($detalles as $detalle) {
    
 
@@ -305,7 +307,7 @@ $totaliv = 0;
    // $item->numeroDocumento = null;
     $item->cantidad = $detalle->cantidad;
     $item->codigo = null;
-   // $item->codTributo = null;
+    
     $item->uniMedida = 59;
     $item->descripcion = $detalle->descripcion;
     $item->precioUni = round($detalle->preciouni, 2);
@@ -314,6 +316,8 @@ $totaliv = 0;
     //$totalGravada += $item->precioUni;
 $item->compra = round($detalle->preciouni * $detalle->cantidad, 2);
 $totalGravada += $item->compra;
+//$item->reteRenta = round($totalGravada * 0.10, 2);
+//$renta += $item->reteRenta;
     $cuerpo[] = $item;
    
     $dte->cuerpoDocumento = [$item];
@@ -332,13 +336,13 @@ $dte->cuerpoDocumento = $cuerpo;
     $dte->resumen->totalLetras = numeroALetras($totalGravada);
     $dte->resumen->subTotal = round($totalGravada, 2);
     $dte->resumen->ivaRete1 = 0.00;
-    $dte->resumen->reteRenta = 0.00;    
-    $dte->resumen->totalPagar = round($totalGravada, 2);
+    $dte->resumen->reteRenta = round($totalGravada * 0.10, 2);
+    $dte->resumen->totalPagar = round($totalGravada - $dte->resumen->reteRenta, 2);
     $dte->resumen->condicionOperacion = 1;
     $dte->resumen->pagos = [
         [
             "codigo"=>"01",
-            "montoPago"=>$totalGravada,
+            "montoPago"=>round($totalGravada - $dte->resumen->reteRenta, 2),
             "referencia"=>"0000",
             "periodo"=>null,
             "plazo"=>null
