@@ -58,8 +58,8 @@
     @if($dte->tipo_dte === '14')
         Sujeto Excluido
     @elseif($dte->tipo_dte === '01')
-        Factura Electrónica
-    @elseif($dte->tipo_dte === '04')
+        Consumidor Final
+    @elseif($dte->tipo_dte === '05')
         Nota de Crédito
     @elseif($dte->tipo_dte === '03')
         Credito Fiscal
@@ -87,7 +87,10 @@
 </form>
     @endif
 
+
+@if($dte->tipo_dte === '03')
     <a href="{{ route('notas-credito.formEmitir', $dte->id) }}" class="btn btn-sm btn-warning">Nota de Crédito</a>
+@endif
 </td>
 </tr>
 @endforeach

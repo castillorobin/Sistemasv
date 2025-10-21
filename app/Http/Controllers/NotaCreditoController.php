@@ -13,9 +13,12 @@ class NotaCreditoController extends Controller
 {
     public function emitirDesdeDTE(Request $request, DocumentoDTE $dte)
     {
-        try {
+       
             $original = json_decode(Storage::get($dte->json_legible_path), true);
-
+            $montoParcial = floatval($request->input('monto', 0));
+            //dd($montoParcial);
+            /*
+            dd($original);
             $fecha = now()->format('Y-m-d');
             $hora = now()->format('H:i:s');
             $codigoGeneracionNC = strtoupper(Str::uuid());
@@ -31,140 +34,9 @@ class NotaCreditoController extends Controller
             $base = $esTotal ? $totalGravadaOriginal : round($montoParcial / 1.13, 2);
             $iva = round($base * 0.13, 2);
             $total = $base + $iva;
-
-            $nota = [
-                'identificacion' => [
-                    'version' => 3,
-                    'ambiente' => '00',
-                    'tipoDte' => '05',
-                    'numeroControl' => 'DTE-05-B001P001-' . str_pad(mt_rand(1, 999999999999999), 15, '0', STR_PAD_LEFT),
-                    'codigoGeneracion' => $codigoGeneracionNC,
-                    'tipoModelo' => 1,
-                    'tipoOperacion' => 1,
-                    'tipoContingencia' => null,
-                    'motivoContin' => null,
-                    'fecEmi' => $fecha,
-                    'horEmi' => $hora,
-                    'tipoMoneda' => 'USD'
-                ],
-                'documentoRelacionado' => [[
-                    'tipoDocumento' => $original['identificacion']['tipoDte'],
-                    'tipoGeneracion' => 1,
-                    'numeroDocumento' => $original['identificacion']['numeroControl'],
-                    'fechaEmision' => $original['identificacion']['fecEmi'],
-                ]],
-                'emisor' => [
-                    'nit' => $original['emisor']['nit'],
-                    'nrc' => $original['emisor']['nrc'],
-                    'nombre' => $original['emisor']['nombre'],
-                    'codActividad' => $original['emisor']['codActividad'],
-                    'descActividad' => $original['emisor']['descActividad'],
-                    'nombreComercial' => $original['emisor']['nombreComercial'],
-                    'tipoEstablecimiento' => $original['emisor']['tipoEstablecimiento'],
-                    'direccion' => $original['emisor']['direccion'],
-                    'telefono' => $original['emisor']['telefono'],
-                    'correo' => $original['emisor']['correo']
-                ],
-                'receptor' => [
-                    'nit' => $original['receptor']['nit'] ?? '00000000000000',
-                    'nrc' => $original['receptor']['nrc'] ?? null,
-                    'nombre' => $original['receptor']['nombre'] ?? 'CONSUMIDOR FINAL',
-                    'codActividad' => $original['receptor']['codActividad'] ?? '000000',
-                    'descActividad' => $original['receptor']['descActividad'] ?? 'NO APLICA',
-                    'direccion' => $original['receptor']['direccion'] ?? [
-                        'departamento' => 'SAN SALVADOR',
-                        'municipio' => 'SAN SALVADOR',
-                        'complemento' => 'NO DEFINIDO'
-                    ],
-                    'telefono' => $original['receptor']['telefono'] ?? '0000-0000',
-                    'correo' => $original['receptor']['correo'] ?? 'correo@ejemplo.com',
-                    'nombreComercial' => $original['receptor']['nombreComercial'] ?? 'CONSUMIDOR FINAL'
-                ],
-                'ventaTercero' => null,
-                'cuerpoDocumento' => [[
-                    'numItem' => 1,
-                    'tipoItem' => 1,
-                    'numeroDocumento' => null,
-                    'cantidad' => 1,
-                    'codigo' => 'NC01',
-                    'uniMedida' => 59,
-                    'descripcion' => $esTotal ? 'Nota de crédito por anulación total' : 'Nota de crédito parcial',
-                    'precioUni' => -$base,
-                    'montoDescu' => 0.00,
-                    'ventaNoSuj' => 0.00,
-                    'ventaExenta' => 0.00,
-                    'ventaGravada' => -$base,
-                    'tributos' => [[
-                        'codigo' => '20',
-                        'descripcion' => 'IVA',
-                        'valor' => -$iva
-                    ]]
-                ]],
-                'resumen' => [
-                    'totalNoSuj' => 0.00,
-                    'totalExenta' => 0.00,
-                    'totalGravada' => -$base,
-                    'subTotalVentas' => -$base,
-                    'ivaRete1' => 0.00,
-                    'reteRenta' => 0.00,
-                    'montoTotalOperacion' => -$total,
-                    'totalLetras' => 'MENOS ' . strtoupper($this->numeroALetras($total)),
-                    'condicionOperacion' => 1,
-                    'tributos' => [[
-                        'codigo' => '20',
-                        'descripcion' => 'IVA',
-                        'valor' => -$iva
-                    ]],
-                ],
-                'extension' => null,
-                'apendice' => null
-            ];
-
-            $payload = [
-                "Usuario" => "02022504711049",
-                "Password" => "Camioneta2025.",
-                "Ambiente" => "00",
-                "DteJson" => json_encode($nota),
-                "Nit" => "008688551",
-                "PasswordPrivado" => "Camioneta2025",
-                "TipoDte" => '05',
-                "CodigoGeneracion" => $codigoGeneracionNC,
-                "NumControl" => $nota['identificacion']['numeroControl'],
-                "VersionDte" => 3,
-                "CorreoCliente" => $nota['receptor']['correo'] ?? null
-            ];
-
-            $response = Http::withHeaders(['Content-Type' => 'application/json'])
-                ->post('http://98.89.90.33:7122/api/procesar-dte', $payload);
-
-            if (!$response->successful()) {
-                return back()->with('error', 'Error en envío de nota de crédito: ' . $response->body());
-            }
-
-            $respuestaAPI = $response->json();
-
-            DocumentoDTE::create([
-                'sello_recibido' => $respuestaAPI['selloRecibido'] ?? null,
-                'codigo_generacion' => $codigoGeneracionNC,
-                'numero_control' => $nota['identificacion']['numeroControl'],
-                'factura' => $dte->factura,
-                'fecha_generacion' => now(),
-                'tipo_dte' => '05',
-                'json_original_path' => "dtes_json/original_{$codigoGeneracionNC}.json",
-                'json_legible_path' => "dtes_json/legible_{$codigoGeneracionNC}.json",
-                'json_firmado_path' => null,
-                'estado' => 'activo'
-            ]);
-
-            Storage::put("dtes_json/original_{$codigoGeneracionNC}.json", json_encode($nota, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            Storage::put("dtes_json/legible_{$codigoGeneracionNC}.json", json_encode($nota, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-
-            return back()->with('success', 'Nota de crédito emitida correctamente.');
-
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al emitir nota de crédito: ' . $e->getMessage());
-        }
-
+*/
+           
+            return view('facturas.generardtenotacredito', compact('original', 'montoParcial'));
 
        
     }
