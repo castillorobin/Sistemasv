@@ -43,6 +43,7 @@
 <th>Número Control</th>
 <th>Código Generación</th>
 <th>Fecha</th>
+<th>Tipo</th>
 <th>Estado</th>
 <th>Acciones</th>
 </tr>
@@ -53,6 +54,18 @@
 <td>{{ $dte->numero_control }}</td>
 <td>{{ $dte->codigo_generacion }}</td>
 <td>{{ $dte->created_at->format('d/m/Y H:i') }}</td>
+<td>
+    @if($dte->tipo_dte === '14')
+        Sujeto Excluido
+    @elseif($dte->tipo_dte === '01')
+        Factura Electrónica
+    @elseif($dte->tipo_dte === '04')
+        Nota de Crédito
+    @elseif($dte->tipo_dte === '03')
+        Credito Fiscal
+    @endif  
+  
+</td>
 <td>
     @if($dte->estado === 'anulado')
         <span class="badge bg-danger">Anulado</span>
