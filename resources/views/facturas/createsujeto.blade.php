@@ -1,24 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
+
+<!-- Select2 CSS & JS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <div class="card">
     <div class="card-header">
-        <h5>Factura - Sujeto Excluido</h5>
+        <h5>Factura Sujeto Excluido</h5>
+
         @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
+            <div class="alert alert-danger mt-2">{{ session('error') }}</div>
         @endif
+
         @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="alert alert-success mt-2">{{ session('success') }}</div>
         @endif
     </div>
+
     <div class="card-body">
-        <form action="{{ route('facturas.sujeto_excluido.generar') }}" method="POST">
+        <form action="{{ route('compras.storeSujetoExcluido') }}" method="POST">
             @csrf
 
+            <!-- Proveedor -->
             <div class="mb-3">
-                <label for="proveedor_id" class="form-label">Proveedor (Sujeto Excluido)</label>
-                <select name="proveedor_id" id="proveedor_id" class="form-control" required>
-                    <option value="">Seleccione</option>
+                <label for="proveedor_id">Proveedor</label>
+                <select name="proveedor_id" id="proveedor_id" class="form-control select2" required>
+                    <option value="">Seleccione un proveedor</option>
                     @foreach ($proveedores as $proveedor)
                         <option value="{{ $proveedor->id }}">{{ $proveedor->nombre }}</option>
                     @endforeach
@@ -26,94 +35,123 @@
             </div>
 
             <hr>
-            <h5>Productos</h5>
-            <table class="table table-bordered" id="tabla-productos">
+            <h5>Agregar Productos</h5>
+
+            <!-- Línea para agregar productos -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label>Producto</label>
+                    <select id="producto_id" class="form-control select2">
+                        <option value="">Seleccione producto</option>
+                        @foreach ($productos as $producto)
+                            <option value="{{ $producto->id }}"
+                                data-nombre="{{ $producto->nombre }}"
+                                data-precio="{{ $producto->precio_costo }}">
+                                {{ $producto->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label>Cantidad</label>
+                    <input type="number" id="cantidad" class="form-control" value="1" min="1">
+                </div>
+
+                <div class="col-md-2">
+                    <label>Precio</label>
+                    <input type="number" id="precio" class="form-control" readonly>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" id="agregarProducto" class="btn btn-primary w-100">Agregar</button>
+                </div>
+            </div>
+
+            <!-- Tabla productos -->
+            <table class="table table-bordered" id="tablaProductos">
                 <thead>
                     <tr>
                         <th>Descripción</th>
-                        <th>Precio Unitario</th>
                         <th>Cantidad</th>
+                        <th>Precio</th>
                         <th>Subtotal</th>
-                        <th>Acción</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
 
-            <div class="row">
-                <div class="col-md-4">
-                    <label>Descripción</label>
-                    <input type="text" id="descripcion" class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <label>Precio</label>
-                    <input type="number" id="precio" class="form-control" step="0.01">
-                </div>
-                <div class="col-md-2">
-                    <label>Cantidad</label>
-                    <input type="number" id="cantidad" class="form-control" value="1" min="1">
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" id="agregar-producto" class="btn btn-primary">Agregar</button>
-                </div>
-            </div>
-
-            <input type="hidden" name="productos_json" id="productos_json">
+            <input type="hidden" name="productos" id="productos_json">
 
             <div class="mt-4">
-                <button type="submit" class="btn btn-success">Generar Factura</button>
-                <a href="{{ route('facturas.index') }}" class="btn btn-secondary">Cancelar</a>
+                <button class="btn btn-success">Guardar Factura</button>
+                <a href="{{ route('compras.index') }}" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
 
+<!-- Scripts -->
 <script>
     let productos = [];
 
-    function renderTabla() {
-        const tbody = document.querySelector("#tabla-productos tbody");
-        tbody.innerHTML = "";
+    $(document).ready(function () {
+        $('.select2').select2();
 
-        productos.forEach((prod, index) => {
-            const subtotal = (prod.precio * prod.cantidad).toFixed(2);
-            const row = `
-                <tr>
-                    <td>${prod.descripcion}</td>
-                    <td>$${parseFloat(prod.precio).toFixed(2)}</td>
-                    <td>${prod.cantidad}</td>
-                    <td>$${subtotal}</td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarProducto(${index})">Eliminar</button></td>
-                </tr>
-            `;
-            tbody.innerHTML += row;
+        $('#producto_id').on('change', function () {
+            let precio = $(this).find(':selected').data('precio') || 0;
+            $('#precio').val(precio);
         });
 
-        document.getElementById('productos_json').value = JSON.stringify(productos);
-    }
+        $('#agregarProducto').on('click', function () {
+            let productoId = $('#producto_id').val();
+            let nombre = $('#producto_id').find(':selected').data('nombre');
+            let precio = parseFloat($('#precio').val());
+            let cantidad = parseInt($('#cantidad').val());
 
-    function eliminarProducto(index) {
-        productos.splice(index, 1);
-        renderTabla();
-    }
+            if (!productoId || cantidad <= 0 || isNaN(precio)) {
+                alert("Seleccione producto, cantidad y precio válidos.");
+                return;
+            }
 
-    document.getElementById('agregar-producto').addEventListener('click', function () {
-        const descripcion = document.getElementById('descripcion').value.trim();
-        const precio = parseFloat(document.getElementById('precio').value);
-        const cantidad = parseInt(document.getElementById('cantidad').value);
+            let subtotal = (precio * cantidad).toFixed(2);
 
-        if (!descripcion || isNaN(precio) || isNaN(cantidad) || precio <= 0 || cantidad <= 0) {
-            alert("Complete correctamente todos los campos del producto.");
-            return;
+            productos.push({
+                producto_id: productoId,
+                descripcion: nombre,
+                cantidad: cantidad,
+                precio: precio
+            });
+
+            $('#tablaProductos tbody').append(`
+                <tr>
+                    <td>${nombre}</td>
+                    <td>${cantidad}</td>
+                    <td>$${precio.toFixed(2)}</td>
+                    <td>$${subtotal}</td>
+                    <td><button type="button" class="btn btn-danger btn-sm eliminarProducto" data-index="${productos.length - 1}">Eliminar</button></td>
+                </tr>
+            `);
+
+            $('#producto_id').val(null).trigger('change');
+            $('#cantidad').val(1);
+            $('#precio').val('');
+
+            actualizarJSON();
+        });
+
+        $('#tablaProductos').on('click', '.eliminarProducto', function () {
+            let index = $(this).data('index');
+            productos.splice(index, 1);
+            $(this).closest('tr').remove();
+            actualizarJSON();
+        });
+
+        function actualizarJSON() {
+            $('#productos_json').val(JSON.stringify(productos));
         }
-
-        productos.push({ descripcion, precio, cantidad });
-        renderTabla();
-
-        // Reset campos
-        document.getElementById('descripcion').value = '';
-        document.getElementById('precio').value = '';
-        document.getElementById('cantidad').value = 1;
     });
 </script>
+
 @endsection

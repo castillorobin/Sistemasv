@@ -250,7 +250,7 @@ function crearDTE($fecha_actual, $cliente, $hora_actual, $detalles) {
     
     // Configurar identificación
     $dte->identificacion = new Identificacion();
-    $dte->identificacion->numeroControl = "DTE-14-M001P001-000080000000263";//. $paradte;  //DTE-01-F0000001-000080000000263
+    $dte->identificacion->numeroControl = "DTE-14-M001P001-0000". $paradte;  //DTE-01-F0000001-000080000000263
     //dd( $dte->identificacion->numeroControl);
     $dte->identificacion->codigoGeneracion = getGUID(); //"7DEEF1AF-7DF7-436F-B9AE-47CA46035F1B";
     $dte->identificacion->fecEmi = $fecha_actual;
@@ -279,16 +279,16 @@ function crearDTE($fecha_actual, $cliente, $hora_actual, $detalles) {
     // Configurar receptor
     $dte->sujetoExcluido = new sujetoExcluido();
     $dte->sujetoExcluido->tipoDocumento = "37";
-    $dte->sujetoExcluido->numDocumento = $cliente[0]->dui;
-    $dte->sujetoExcluido->nombre = $cliente[0]->nombre;
+    $dte->sujetoExcluido->numDocumento = $cliente->dui;
+    $dte->sujetoExcluido->nombre = $cliente->nombre;
     $dte->sujetoExcluido->codActividad = "41001";
     $dte->sujetoExcluido->descActividad = "Clientes Frecuentes";
     $dte->sujetoExcluido->direccion = new Direccion();
     $dte->sujetoExcluido->direccion->departamento = "02";
     $dte->sujetoExcluido->direccion->municipio = "01";
-    $dte->sujetoExcluido->direccion->complemento = $cliente[0]->direccion;
-    $dte->sujetoExcluido->telefono = $cliente[0]->telefono;
-    $dte->sujetoExcluido->correo = $cliente[0]->correo;
+    $dte->sujetoExcluido->direccion->complemento = $cliente->direccion;
+    $dte->sujetoExcluido->telefono = $cliente->telefono;
+    $dte->sujetoExcluido->correo = $cliente->correo;
 
 $cuerpo = [];
 $totalGravada = 0;

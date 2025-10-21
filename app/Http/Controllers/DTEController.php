@@ -11,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use App\Models\Proveedor;
+use App\Models\Producto;
 
 
 
@@ -267,8 +268,9 @@ public function anular(Request $request, DocumentoDTE $dte)
 
 public function creandosujeto()
 {
+    $productos = Producto::all();
     $proveedores = Proveedor::all();
-    return view('facturas.createsujeto', compact('proveedores'));
+    return view('facturas.createsujeto', compact('proveedores', 'productos'));
 }
 }
 
