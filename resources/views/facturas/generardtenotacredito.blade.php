@@ -334,10 +334,6 @@ $itemnum = 1;
     $item->numeroDocumento = $original['identificacion']['codigoGeneracion'];
     $item->cantidad = 1;
 
-    $precioConIVA = round($montoParcial, 2);
-    $baseSinIVA = round($precioConIVA / 1.13, 2);
-    $precioUnitarioBase = $baseSinIVA / $item->cantidad;
-    
     $item->codigo = "27";
     $item->codTributo = null;
     $item->uniMedida = 59;
@@ -366,7 +362,8 @@ $dte->cuerpoDocumento = $cuerpo;
 $totalBase = round($totalGravada, 2);
 $totalIVA = round($totalBase * 0.13, 2);
 $totalPagar = $totalBase + $totalIVA;
-
+//dd($totalPagar);
+    // Configurar resumen
 $dte->resumen = new Resumen();
 $dte->resumen->totalNoSuj = 0.00;
 $dte->resumen->totalExenta = 0.00;

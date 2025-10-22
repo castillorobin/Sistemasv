@@ -15,7 +15,13 @@ class NotaCreditoController extends Controller
     {
        
             $original = json_decode(Storage::get($dte->json_legible_path), true);
-            $montoParcial = floatval($request->input('monto', 0));
+            $montoParcial = round(floatval($request->input('monto', 0)) / 1.13, 2);
+           //dd($monto);
+
+
+            //$montoParcial = floatval($request->input('monto', 0)) - $monto;
+
+          //  dd($montoParcial);
             //dd($montoParcial);
             /*
             dd($original);
