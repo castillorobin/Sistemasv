@@ -12,6 +12,7 @@ use App\Http\Controllers\DTEController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\CajaController;
 use App\Http\Controllers\NotaCreditoController;
+use App\Http\Controllers\ContingenciaDTEController;
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -88,6 +89,15 @@ Route::resource('proveedores', ProveedorController::class)->parameters([
 Route::resource('cajas', CajaController::class)->only(['index', 'create', 'store']);
 Route::get('cajas/{caja}/movimientos', [CajaController::class, 'movimientos'])->name('cajas.movimientos');
 Route::post('/cajas/{caja}/cerrar', [CajaController::class, 'cerrar'])->name('cajas.cerrar');
+
+//Contingencia DTE
+Route::prefix('contingencia')->group(function () {
+    Route::get('/', [ContingenciaDTEController::class, 'index'])->name('contingencia.index');
+    Route::post('/reportar/{id}', [ContingenciaDTEController::class, 'reportar'])->name('contingencia.reportar');
+    Route::post('/enviar/{id}', [ContingenciaDTEController::class, 'enviar'])->name('contingencia.enviar');
+    Route::get('/crearcontingencia', [ContingenciaDTEController::class, 'crearcontingencia'])->name('contingencia.crear');
+    Route::post('/guardarcontingencia', [ContingenciaDTEController::class, 'store'])->name('contingencia.store');
+});
 
 
 require __DIR__.'/auth.php';
