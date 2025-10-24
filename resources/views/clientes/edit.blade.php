@@ -19,7 +19,7 @@
             <label>Nombre Comercial</label>
             <input type="text" name="nombre_comercial" class="form-control" value="{{ old('nombre_comercial', $cliente->nombre_comercial) }}">
         </div>
-
+ 
         <div class="mb-3">
             <label>NIT</label>
             <input type="text" name="nit" class="form-control" value="{{ old('nit', $cliente->nit) }}">
@@ -50,7 +50,7 @@
             <select name="actividad_economica_id" class="form-control select2 w-100">
                 <option value="">Seleccione</option>
                 @foreach ($actividades as $actividad)
-                    <option value="{{ $actividad->id }}" {{ $cliente->actividad_economica_id == $actividad->id ? 'selected' : '' }}>
+                    <option value="{{ $actividad->codigo }}" {{ $cliente->actividad_economica_id == $actividad->codigo ? 'selected' : '' }}>
                         {{ $actividad->descripcion }}
                     </option>
                 @endforeach
