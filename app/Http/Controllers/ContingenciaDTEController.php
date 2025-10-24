@@ -39,7 +39,13 @@ class ContingenciaDTEController extends Controller
         $dte->estado = 'reportado';
         $dte->save();
         */
-        return view('contingencia.reportardteconsumidor', compact('original'));
+        if ($original['identificacion']['tipoDte'] == '03') {
+            return view('contingencia.reportardteccf', compact('original'));
+        }
+        if ($original['identificacion']['tipoDte'] == '01') {
+            return view('contingencia.reportardteconsumidor', compact('original'));
+        }
+        
 
        // return redirect()->back()->with('success', 'DTE marcado como reportado.');
     }
@@ -55,7 +61,13 @@ class ContingenciaDTEController extends Controller
         $dte->estado = 'reportado';
         $dte->save();
         */
-        return view('contingencia.enviardteconsumidor', compact('original'));
+        if ($original['identificacion']['tipoDte'] == '03') {
+            return view('contingencia.enviardteccf', compact('original'));
+        }
+        if ($original['identificacion']['tipoDte'] == '01') {
+            return view('contingencia.enviardteconsumidor', compact('original'));
+        }
+        
     }
 
     public function crearcontingencia()
