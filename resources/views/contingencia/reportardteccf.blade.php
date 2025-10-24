@@ -213,7 +213,7 @@ function crearDTE($fecha_actual, $hora_actual, $original) {
     
 }
 
-//echo "<pre>JSON generado:<br>" . json_encode($dte, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "</pre>";
+
 
 
 
@@ -224,11 +224,9 @@ function enviarDTEAPI($dte) {
         'Usuario' => "02022504711049",
         'Password' => "Camioneta2025.",
         'Ambiente' => '00',
-        'TipoDte' => '03',
         'DteJson' => json_encode($dte),
         'Nit' => "008688551",
         'PasswordPrivado' => "Camioneta2025",
-        'VersionDte' => 3
         
     ];
 
@@ -319,7 +317,7 @@ $dteArray = json_decode(json_encode($dte), true);
         Storage::put($rutaFirmado, $jwsFirmado);
     }
 
-
+echo "<pre>JSON generado:<br>" . json_encode($dte, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "</pre>";
 /*
 // 4) Generar PDF versión legible para entrega
 $pdf = Pdf::loadView('dtes.plantilla_pdf', ['dte' => $legible]); // $legible = tu JSON legible
