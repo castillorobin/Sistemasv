@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <?php
 use App\Models\DocumentoDTE;
+use App\Models\ContingenciaDTE;
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -223,6 +224,10 @@ DocumentoDTE::create([
 'json_legible_path' => $rutaLegible,
 'json_firmado_path' => $rutaFirmado,
 //'pdf_path' => $rutaPdf,
+]);
+
+ContingenciaDTE::where('codigo_generacion', $original['identificacion']['codigoGeneracion'])->update([
+    'estado' => 'enviado',
 ]);
 
 echo '

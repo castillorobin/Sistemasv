@@ -23,77 +23,6 @@ function getGUID(){
     }
 }
 
-function numeroALetras($numero) {
-    $unidad = [
-        '', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve',
-        'diez', 'once', 'doce', 'trece', 'catorce', 'quince',
-        'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve', 'veinte'
-    ];
-
-    $decenas = [
-        '', '', 'veinti', 'treinta', 'cuarenta', 'cincuenta',
-        'sesenta', 'setenta', 'ochenta', 'noventa'
-    ];
-
-    $centenas = [
-        '', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos',
-        'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'
-    ];
-
-    if ($numero == 0) return 'Cero dólares 00/100';
-
-    $entero = floor($numero);
-    $centavos = round(($numero - $entero) * 100);
-
-    $letras = '';
-
-    if ($entero >= 1000000) {
-        $millones = floor($entero / 1000000);
-        $letras .= numeroALetras($millones) . ' millón' . ($millones > 1 ? 'es' : '') . ' ';
-        $entero %= 1000000;
-    }
-
-    if ($entero >= 1000) {
-        $miles = floor($entero / 1000);
-        if ($miles == 1) {
-            $letras .= 'mil ';
-        } else {
-            $letras .= numeroALetras($miles) . ' mil ';
-        }
-        $entero %= 1000;
-    }
-
-    if ($entero > 0) {
-        if ($entero == 100) {
-            $letras .= 'cien';
-        } else {
-            $c = floor($entero / 100);
-            $d = floor(($entero % 100) / 10);
-            $u = $entero % 10;
-
-            $letras .= $centenas[$c];
-
-            if ($d == 1 || ($d == 2 && $u == 0)) {
-                $letras .= ($c > 0 ? ' ' : '') . $unidad[$d * 10 + $u];
-            } elseif ($d == 2) {
-                $letras .= 'i' . $unidad[$u];
-            } elseif ($d > 2) {
-                $letras .= ($c > 0 ? ' ' : '') . $decenas[$d];
-                if ($u > 0) {
-                    $letras .= ' y ' . $unidad[$u];
-                }
-            } elseif ($u > 0) {
-                $letras .= ($c > 0 ? ' ' : '') . $unidad[$u];
-            }
-        }
-    }
-
-    $letras = trim(ucfirst($letras)) . ' dólares';
-
-    $letras .= ' con ' . str_pad($centavos, 2, '0', STR_PAD_LEFT) . '/100';
-
-    return $letras;
-}
 
 
 
@@ -102,40 +31,23 @@ function numeroALetras($numero) {
 class Identificacion {
     public $version = 3;
     public $ambiente = "00";
-    public $tipoDte = "01"; 
-    public $numeroControl;
     public $codigoGeneracion;
-    public $tipoModelo = 1;
-    public $tipoOperacion = 1;
-    public $tipoContingencia = null;
-    public $motivoContin = null;
-    public $fecEmi;
-    public $horEmi;
-    public $tipoMoneda = "USD";
+    public $fTransmision;
+    public $hTransmision;
 }
 
-class Direccion {
-    public $departamento;
-    public $municipio;
-    public $complemento;
-}
 
 class Emisor {
     public $nit;
-    public $nrc;
     public $nombre;
-    public $codActividad;
-    public $descActividad;
-    public $nombreComercial;
+    public $nombreResponsable;
+    public $tipoDocResponsable;
+    public $numeroDocResponsable;
     public $tipoEstablecimiento;
-    public $direccion;
-    public $telefono;
     public $codEstableMH;
-    public $codEstable;
-    public $codPuntoVentaMH;
     public $codPuntoVenta;
+    public $telefono;
     public $correo;
-    //public $tributos;
 }
 
 class detalleDTE {
@@ -173,48 +85,44 @@ function crearDTE($fecha_actual, $hora_actual, $original) {
     
     $dte = new DocumentoTributarioElectronico();
     
-    // Configurar identificación
-    $dte->identificacion = new Identificacion();
+     $dte->identificacion = new Identificacion();
    // $dte->identificacion->numeroControl = "DTE-01-M001P001-0000". $paradte;  //DTE-01-F0000001-000080000000263
     $dte->identificacion->codigoGeneracion = getGUID(); //"7DEEF1AF-7DF7-436F-B9AE-47CA46035F1B";
-    $dte->identificacion->fecEmi = $fecha_actual;
-    $dte->identificacion->horEmi = $hora_actual;
+    $dte->identificacion->fTransmision = $fecha_actual;
+    $dte->identificacion->hTransmision = $hora_actual;
     
     // Configurar emisor
     $dte->emisor = new Emisor();
     $dte->emisor->nit = "008688551";
-    $dte->emisor->nrc = "3728110";
     $dte->emisor->nombre = "VILMA JANNET GODOY MENDOZA";
-    $dte->emisor->codActividad = "47214";
-    $dte->emisor->descActividad = "VENTA AL POR MENOR DE PRODUCTOS LACTEOS";
-    $dte->emisor->nombreComercial = "VILMA JANNET GODOY MENDOZA";
+    $dte->emisor->nombreResponsable = "VILMA GODOY";
+    $dte->emisor->tipoDocResponsable = "37";
+    $dte->emisor->numeroDocResponsable = "0000001";
     $dte->emisor->tipoEstablecimiento = "02";
-    $dte->emisor->direccion = new Direccion();
-    $dte->emisor->direccion->departamento = "02";
-    $dte->emisor->direccion->municipio = "01";
-    $dte->emisor->direccion->complemento = "PTO 23 VTA 10 AV SUR ENTRE 15 Y 17 CL PTE TERM DE BUSES FCO CL LA TERMINAL 116";
-    $dte->emisor->telefono = "2429-0920";
     $dte->emisor->codEstableMH = null;
-    $dte->emisor->codEstable = null;
-    $dte->emisor->codPuntoVentaMH = null;
     $dte->emisor->codPuntoVenta = null;
+    $dte->emisor->telefono = "2429-0920";
     $dte->emisor->correo = "vilmademendoza71@gmail.com";
+
+   // Configurar detalleDTE
 
     $dte->detalleDTE = new detalleDTE();
     $dte->detalleDTE = [
     [
         "noItem" => 1,
         "codigoGeneracion" => $original['identificacion']['codigoGeneracion'],
-        "tipoDoc" => $original['identificacion']['tipoDte']
+        "tipoDoc" => "01"
     ]
     ];
+
+    // Configurar motivo
     $dte->motivo = new motivo();
     $dte->motivo->fInicio = $fecha_actual;
     $dte->motivo->fFin = $fecha_actual;
-    $dte->motivo->hInicio = "5:00:00";
-    $dte->motivo->hFin = date("H:i:s", strtotime('-30 minutes'));;
+    $dte->motivo->hInicio = "05:00:00";
+    $dte->motivo->hFin = date("H:i:s", strtotime('-5 minutes'));
     $dte->motivo->tipoContingencia = 3;
-    $dte->motivo->motivoContingencia = "Falla en el sistema de facturación";
+    $dte->motivo->motivoContingencia = "Falla en el sistema de facturación electrónica";
 
     return $dte;
     

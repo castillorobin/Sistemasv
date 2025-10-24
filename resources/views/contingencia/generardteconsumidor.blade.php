@@ -119,13 +119,13 @@ function sacartotal($detalles){
 
 // Clases para estructurar el DTE
 class Identificacion {
-      public $version = 3;
+      public $version = 1;
     public $ambiente = "00";
     public $tipoDte = "01"; 
     public $numeroControl;
     public $codigoGeneracion;
-    public $tipoModelo = 1;
-    public $tipoOperacion = 1;
+    public $tipoModelo = 2;
+    public $tipoOperacion = 2;
     public $tipoContingencia = 3;
     public $motivoContin = "Falla en el sistema de facturación";
     public $fecEmi;
@@ -257,7 +257,7 @@ $hora_actual = date("h:i:s");
 // Función para crear el DTE
 function crearDTE($fecha_actual, $cliente, $hora_actual, $detalles) {
 
- $paradte = 70000000000 + $detalles[0]->id;
+ $paradte = 20000000000 + $detalles[0]->id;
     
     $dte = new DocumentoTributarioElectronico();
     

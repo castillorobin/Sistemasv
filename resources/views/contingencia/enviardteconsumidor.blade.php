@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <?php
 use App\Models\DocumentoDTE;
+use App\Models\ContingenciaDTE;
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -22,7 +23,7 @@ function getGUID(){
         return $uuid;
     }
 }
-
+ 
 function numeroALetras($numero) {
     $unidad = [
         '', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve',
@@ -111,8 +112,8 @@ function enviarDTEAPI($original) {
         'TipoDte' => '01',
         'CodigoGeneracion' => $original['identificacion']['codigoGeneracion'],
         'NumControl' => $original['identificacion']['numeroControl'],
-        'VersionDte' => 3,
-        //'CorreoCliente' => "poncemarito2019@gmail.com"
+        'VersionDte' => 1,
+        'CorreoCliente' => "poncemarito2019@gmail.com"
         //'CorreoCliente' => $cliente[0]->Correo
     ];
 
@@ -158,13 +159,13 @@ try {
     echo "Sello de recepción: " . $respuestaAPI->selloRecibido . "<br>";
 } elseif (isset($respuestaAPI->SelloRecepcion)) {
     echo "Sello de recepción (SelloRecepcion): " . $respuestaAPI->SelloRecepcion . "<br>";
-} elseif (isset($dte->identificacion->codigoGeneracion)) {
-    echo "Código de generación: " . $dte->identificacion->codigoGeneracion . "<br>";
+} elseif (isset($original->identificacion->codigoGeneracion)) {
+    echo "Código de generación: " . $original->identificacion->codigoGeneracion . "<br>";
 }
     echo "Proceso completado exitosamente.<br>";
 
      // Almacenar datos del DTE
-$dteArray = json_decode(json_encode($dte), true);
+$dteArray = json_decode(json_encode($original), true);
  // Datos de la respuesta MH
     $codigoGeneracion = $respuestaAPI->codigoGeneracion ?? ($dteArray['identificacion']['codigoGeneracion'] ?? (string) Str::uuid());
     $numControl       = $respuestaAPI->numControl       ?? ($dteArray['identificacion']['numeroControl'] ?? null);
@@ -223,6 +224,10 @@ DocumentoDTE::create([
 'json_legible_path' => $rutaLegible,
 'json_firmado_path' => $rutaFirmado,
 //'pdf_path' => $rutaPdf,
+]);
+
+ContingenciaDTE::where('codigo_generacion', $original['identificacion']['codigoGeneracion'])->update([
+    'estado' => 'enviado',
 ]);
 
 echo '

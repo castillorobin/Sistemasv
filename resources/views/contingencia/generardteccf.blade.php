@@ -251,7 +251,7 @@ $hora_actual = date("h:i:s");
  
 // Función para crear el DTE
 function crearDTE($fecha_actual, $hora_actual, $detalles, $cliente, $actividad_descripcion) {
-    $paradte = 90000000000 + $detalles[0]->id;
+    $paradte = 60000000000 + $detalles[0]->id;
     $dte = new DocumentoTributarioElectronico();
     
     // Configurar identificación

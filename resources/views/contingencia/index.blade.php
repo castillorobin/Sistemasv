@@ -52,6 +52,9 @@
 <button type="submit" class="btn btn-primary btn-sm">Enviar</button>
 </form>
 @endif
+@if($dte->estado === 'enviado')
+<span class="badge badge-success">Transmitido</span>
+@endif
 </td>
 </tr>
 @empty

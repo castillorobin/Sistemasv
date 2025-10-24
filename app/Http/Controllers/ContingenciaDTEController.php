@@ -40,6 +40,7 @@ class ContingenciaDTEController extends Controller
         $dte->save();
         */
         if ($original['identificacion']['tipoDte'] == '03') {
+           
             return view('contingencia.reportardteccf', compact('original'));
         }
         if ($original['identificacion']['tipoDte'] == '01') {
