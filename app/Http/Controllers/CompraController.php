@@ -138,6 +138,16 @@ public function storeSujetoExcluido(Request $request)
         'productos.*.cantidad' => 'required|numeric|min:1',
         'productos.*.precio' => 'required|numeric|min:0.01',
     ]);
+
+    //  Registrar compra
+        $compra = new Compra();
+        $compra->proveedor_id = $request->proveedor_id;
+       // $compra->tipo_factura = 'sujeto_excluido';
+        $compra->total = $total;
+       // $compra->codigo_generacion = strtoupper(Str::uuid());
+        ///$compra->numero_control = 'DTE-06-M001P001-' . str_pad(mt_rand(1, 999999999999999), 15, '0', STR_PAD_LEFT);
+        $compra->fecha = now();
+        $compra->save();
    
     try {
         DB::beginTransaction();
@@ -161,17 +171,20 @@ public function storeSujetoExcluido(Request $request)
                 'precio_unitario' => $item['precio'],
                 'subtotal' => $subtotal,
             ]);
+
+                     // Registrar en Kardex
+    Kardex::create([
+        'producto_id' => $producto->id,
+        'tipo_movimiento' => 'entrada',
+        'cantidad' => $item['cantidad'],
+        'precio_unitario' => $item['precio'],
+        'total' => $subtotal,
+        'fecha' => now(),
+        'documento_referencia' => 'Compra ID: ' . $compra->id
+    ]);
         }
 
-        //  Registrar compra
-        $compra = new Compra();
-        $compra->proveedor_id = $request->proveedor_id;
-       // $compra->tipo_factura = 'sujeto_excluido';
-        $compra->total = $total;
-       // $compra->codigo_generacion = strtoupper(Str::uuid());
-        ///$compra->numero_control = 'DTE-06-M001P001-' . str_pad(mt_rand(1, 999999999999999), 15, '0', STR_PAD_LEFT);
-        $compra->fecha = now();
-        $compra->save();
+        
 
         // Detalles de productos
         $compra->detalles()->saveMany($detalles);
