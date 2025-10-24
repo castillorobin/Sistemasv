@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Proveedor;
 use Illuminate\Support\Str;
+use App\Models\Kardex;
 
 class CompraController extends Controller
 {
@@ -81,6 +82,17 @@ class CompraController extends Controller
             ]);
 
             $total += $subtotal;
+
+            // Registrar en Kardex
+    Kardex::create([
+        'producto_id' => $producto->id,
+        'tipo_movimiento' => 'entrada',
+        'cantidad' => $item['cantidad'],
+        'precio_unitario' => $item['precio'],
+        'total' => $subtotal,
+        'fecha' => now(),
+        'documento_referencia' => 'Compra ID: ' . $compra->id
+    ]);
         }
 
         $compra->update(['total' => $total]);

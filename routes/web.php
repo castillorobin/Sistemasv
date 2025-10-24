@@ -13,6 +13,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\CajaController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\ContingenciaDTEController;
+use App\Http\Controllers\KardexController;
 /*
 Route::get('/', function () {
     return view('welcome');
@@ -99,5 +100,8 @@ Route::prefix('contingencia')->group(function () {
     Route::post('/guardarcontingencia', [ContingenciaDTEController::class, 'store'])->name('contingencia.store');
 });
 
+//Kardex
+Route::get('/kardex', [KardexController::class, 'index'])->name('kardex.index');
+Route::get('/kardex/{producto}', [KardexController::class, 'show'])->name('kardex.detalle');
 
 require __DIR__.'/auth.php';

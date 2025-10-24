@@ -133,6 +133,17 @@ public function store(Request $request)
             'iva' => $iva,
             'total' => $total,
         ]);
+
+          // Registrar en Kardex
+    Kardex::create([
+        'producto_id' => $producto->id,
+        'tipo_movimiento' => 'salida',
+        'cantidad' => $item['cantidad'],
+        'precio_unitario' => $item['precio'],
+        'total' => $subtotal,
+        'fecha' => now(),
+        'documento_referencia' => 'Venta ID: ' . $factura->id
+    ]);
     });
 
     // Aquí ya puedes usar $factura

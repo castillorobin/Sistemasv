@@ -225,6 +225,14 @@
         </li>
     </ul>
 </li>
+
+{{-- 9. Kardex --}} 
+<li class="nav-item">
+    <a href="{{ route('kardex.index') }}" class="nav-link {{ request()->routeIs('kardex.index') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-boxes"></i>
+        <p>Kardex</p>
+    </a>
+</li>
                     <!-- Puedes agregar más módulos aquí -->
                 </ul>
             </nav>
