@@ -15,15 +15,16 @@ return new class extends Migration
             $table->id();
             $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
             $table->date('fecha');
-            $table->string('tipo_movimiento'); // Compra, Venta, Ajuste, etc.
-            $table->string('documento_referencia')->nullable();
-            $table->integer('entrada')->default(0);
-            $table->integer('cantidad')->default(0);
-            $table->integer('stock_final')->default(0);
-            $table->integer('salida')->default(0);
-            $table->integer('saldo')->default(0);
-            $table->decimal('precio_unitario', 10, 2);
-            $table->decimal('total', 10, 2);
+            $table->string('tipo'); // Compra, Venta, Ajuste, etc.
+            $table->string('documento')->nullable();
+            $table->string('descripcion')->nullable();
+            $table->decimal('Eunidad', 10, 2);
+            $table->decimal('Ecosto', 10, 2);
+            $table->decimal('Sunidad', 10, 2);
+            $table->decimal('Scosto', 10, 2);
+            $table->decimal('Tunidad', 10, 2);
+            $table->decimal('Tcostop', 10, 2);
+            $table->decimal('saldo', 10, 2);
             $table->timestamps();
         });
     }
