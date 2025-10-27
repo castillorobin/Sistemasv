@@ -28,6 +28,7 @@ public function index(Request $request)
     }
 
     $kardex = $query->paginate(20);
+    
     $productos = \App\Models\Producto::all();
 
     return view('kardex.index', compact('kardex', 'productos'));

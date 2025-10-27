@@ -134,6 +134,19 @@ public function store(Request $request)
             'total' => $total,
         ]);
 
+         Kardex::create([
+        'producto_id' => $producto->id,
+        'fecha' => now(),
+        'tipo' => $request->tipo,
+        'documento' => $factura->id,
+        'descripcion' => 'Facturación en ' . $factura->id,
+        'Eunidad' => $item['cantidad'],
+        'Ecosto' => $item['precio'],
+        'Tunidad' => $item['cantidad'] + $producto->stock,
+        'Tcostop' => $producto->precio_costo,
+        'saldo' => ($item['cantidad'] + $producto->stock) * $producto->precio_costo,
+    ]);
+
           // Registrar en Kardex
     Kardex::create([
         'producto_id' => $producto->id,

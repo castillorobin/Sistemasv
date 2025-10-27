@@ -83,15 +83,18 @@ class CompraController extends Controller
 
             $total += $subtotal;
 
-            // Registrar en Kardex
+                   //  dd($item);
     Kardex::create([
         'producto_id' => $producto->id,
-        'tipo_movimiento' => 'entrada',
-        'cantidad' => $item['cantidad'],
-        'precio_unitario' => $item['precio'],
-        'total' => $subtotal,
         'fecha' => now(),
-        'documento_referencia' => 'Compra ID: ' . $compra->id
+        'tipo' => 'CCF0',
+        'documento' => $compra->id,
+        'descripcion' => 'Compra registrada en ' . $compra->id,
+        'Eunidad' => $item['cantidad'],
+        'Ecosto' => $item['precio'],
+        'Tunidad' => $item['cantidad'] + $producto->stock,
+        'Tcostop' => $producto->precio_costo,
+        'saldo' => ($item['cantidad'] + $producto->stock) * $producto->precio_costo,
     ]);
         }
 
@@ -173,14 +176,18 @@ public function storeSujetoExcluido(Request $request)
             ]);
 
                      // Registrar en Kardex
+                     dd($item);
     Kardex::create([
         'producto_id' => $producto->id,
-        'tipo_movimiento' => 'entrada',
-        'cantidad' => $item['cantidad'],
-        'precio_unitario' => $item['precio'],
-        'total' => $subtotal,
         'fecha' => now(),
-        'documento_referencia' => 'Compra ID: ' . $compra->id
+        'tipo' => 'CCF0',
+        'documento' => $compra->id,
+        'descripcion' => $producto->nombre,
+        'Eunidad' => $item['cantidad'],
+        'Ecosto' => $item['precio'],
+        'Tunidad' => $item['cantidad'] + $producto->stock,
+        'Tcostop' => $producto->precio_costo,
+        'saldo' => ($item['cantidad'] + $producto->stock) * $producto->precio_costo,
     ]);
         }
 
