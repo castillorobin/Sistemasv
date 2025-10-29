@@ -123,6 +123,21 @@ public function store(Request $request)
             $producto->save();
 
             $subtotal += $subtotal_detalle;
+
+           // Registrar en Kardex (salida por venta)
+                Kardex::create([
+                    'producto_id' => $producto->id,
+                    'fecha' => now(),
+                    'tipo' => strtoupper($request->tipo), // CCF, CONSUMIDOR, etc.
+                    'documento' => $factura->id,
+                    'descripcion' => 'Venta registrada en factura ' . $factura->numero,
+                    'Sunidad' => $cantidad, // unidades que salieron
+                    'Scosto' => $producto->precio_costo, // costo unitario promedio actual
+                    'Tunidad' => $producto->stock, // stock actual luego de la venta
+                    'Tcostop' => $producto->precio_costo, // costo promedio actual
+                    'saldo' => $producto->stock * $producto->precio_costo, // valor total del stock actual
+                ]);
+
         }
 
         $iva = $subtotal * 0.13;
@@ -134,29 +149,9 @@ public function store(Request $request)
             'total' => $total,
         ]);
 
-         Kardex::create([
-        'producto_id' => $producto->id,
-        'fecha' => now(),
-        'tipo' => $request->tipo,
-        'documento' => $factura->id,
-        'descripcion' => 'Facturación en ' . $factura->id,
-        'Eunidad' => $item['cantidad'],
-        'Ecosto' => $item['precio'],
-        'Tunidad' => $item['cantidad'] + $producto->stock,
-        'Tcostop' => $producto->precio_costo,
-        'saldo' => ($item['cantidad'] + $producto->stock) * $producto->precio_costo,
-    ]);
+        
 
-          // Registrar en Kardex
-    Kardex::create([
-        'producto_id' => $producto->id,
-        'tipo_movimiento' => 'salida',
-        'cantidad' => $item['cantidad'],
-        'precio_unitario' => $item['precio'],
-        'total' => $subtotal,
-        'fecha' => now(),
-        'documento_referencia' => 'Venta ID: ' . $factura->id
-    ]);
+   
     });
 
     // Aquí ya puedes usar $factura
@@ -202,8 +197,6 @@ public function store(Request $request)
          return view('facturas.generardteccf', compact('actual', 'detalles', 'cliente', 'actividad_descripcion'));
     }
     
-
-    //return redirect()->route('facturas.index')->with('success', 'Factura registrada');
 
 }
 

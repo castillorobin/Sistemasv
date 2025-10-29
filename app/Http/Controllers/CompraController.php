@@ -55,48 +55,53 @@ class CompraController extends Controller
         ]);
 
         foreach ($request->productos as $item) {
-            $producto = Producto::findOrFail($item['producto_id']);
-            $cantidad = $item['cantidad'];
-            $precio = $item['precio'];
-            $subtotal = $cantidad * $precio;
+    $producto = Producto::findOrFail($item['producto_id']);
+    $cantidad = $item['cantidad'];
+    $precio = $item['precio'];
+    $subtotal = $cantidad * $precio;
 
-            CompraDetalle::create([
-                'compra_id' => $compra->id,
-                'producto_id' => $producto->id,
-                'cantidad' => $cantidad,
-                'precio_unitario' => $precio,
-                'subtotal' => $subtotal,
-            ]);
+    CompraDetalle::create([
+        'compra_id' => $compra->id,
+        'producto_id' => $producto->id,
+        'cantidad' => $cantidad,
+        'precio_unitario' => $precio,
+        'subtotal' => $subtotal,
+    ]);
 
-            $stock_anterior = $producto->stock ?? 0;
-            $precio_anterior = $producto->precio_costo ?? 0;
-            $nuevo_stock = $stock_anterior + $cantidad;
+    // Valores anteriores
+    $stock_anterior = $producto->stock ?? 0;
+    $precio_anterior = $producto->precio_costo ?? 0;
 
-            $nuevo_precio_costo = $nuevo_stock > 0
-                ? (($stock_anterior * $precio_anterior) + ($cantidad * $precio)) / $nuevo_stock
-                : $precio;
+    // Stock nuevo
+    $nuevo_stock = $stock_anterior + $cantidad;
 
-            $producto->update([
-                'stock' => $nuevo_stock,
-                'precio_costo' => $nuevo_precio_costo,
-            ]);
+    // Cálculo del costo promedio ponderado
+    $nuevo_precio_costo = $nuevo_stock > 0
+        ? (($stock_anterior * $precio_anterior) + ($cantidad * $precio)) / $nuevo_stock
+        : $precio;
 
-            $total += $subtotal;
+    // Actualizar producto
+    $producto->update([
+        'stock' => $nuevo_stock,
+        'precio_costo' => $nuevo_precio_costo,
+    ]);
 
-                   //  dd($item);
+    // Crear movimiento en Kardex con valores correctos
     Kardex::create([
         'producto_id' => $producto->id,
         'fecha' => now(),
         'tipo' => 'CCF0',
         'documento' => $compra->id,
         'descripcion' => 'Compra registrada en ' . $compra->id,
-        'Eunidad' => $item['cantidad'],
-        'Ecosto' => $item['precio'],
-        'Tunidad' => $item['cantidad'] + $producto->stock,
-        'Tcostop' => $producto->precio_costo,
-        'saldo' => ($item['cantidad'] + $producto->stock) * $producto->precio_costo,
+        'Eunidad' => $cantidad,
+        'Ecosto' => $precio,
+        'Tunidad' => $nuevo_stock,
+        'Tcostop' => $nuevo_precio_costo,
+        'saldo' => $nuevo_stock * $nuevo_precio_costo,
     ]);
-        }
+
+    $total += $subtotal;
+}
 
         $compra->update(['total' => $total]);
     });
