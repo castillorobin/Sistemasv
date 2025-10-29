@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\DTEService;
 use App\Models\Actividad;
+use App\Models\ConteoDTE;
 
 
 class FacturaController extends Controller
@@ -186,15 +187,17 @@ public function store(Request $request)
     $cliente = Cliente::where('id', $factura->cliente_id)->get();
     $actual = $factura->created_at;
     if ($request->tipo == "consumidor") {
-        return view('facturas.generardteconsumidor', compact('actual', 'detalles', 'cliente'));
+        $conteo = ConteoDTE::where('tipo', 'consumidor')->first();
+       // dd($conteo->conteo);
+        return view('facturas.generardteconsumidor', compact('actual', 'detalles', 'cliente', 'conteo'));
     }elseif ($request->tipo == "ccf") {
 
         $codactividad = $cliente[0]->actividad_economica_id;
 
         $actividad = Actividad::where('codigo', $codactividad)->get();
         $actividad_descripcion = $actividad[0]->descripcion ?? 'No especificada';
-        
-         return view('facturas.generardteccf', compact('actual', 'detalles', 'cliente', 'actividad_descripcion'));
+        $conteo = ConteoDTE::where('tipo', 'ccf')->first();
+        return view('facturas.generardteccf', compact('actual', 'detalles', 'cliente', 'actividad_descripcion', 'conteo'));
     }
     
 

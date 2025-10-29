@@ -254,10 +254,10 @@ $fecha_actual = date("Y-m-d");
 $hora_actual = date("h:i:s");
 
 // Función para crear el DTE
-function crearDTE($fecha_actual, $cliente, $hora_actual, $detalles) {
+function crearDTE($fecha_actual, $cliente, $hora_actual, $detalles, $conteo) {
 
- $paradte = 70000000000 + $detalles[0]->id;
-    
+ $paradte = "00000000000" . ($conteo->conteo + 1);
+    dd($paradte);
     $dte = new DocumentoTributarioElectronico();
     
     // Configurar identificación
@@ -441,7 +441,7 @@ function enviarDTEAPI($dte, $cliente) {
 // Iniciar proceso automáticamente al abrir el archivo desde el navegador
 try {
     echo "Iniciando generación de DTE...<br>";
-    $dte = crearDTE($fecha_actual, $cliente, $hora_actual, $detalles);
+    $dte = crearDTE($fecha_actual, $cliente, $hora_actual, $detalles, $conteo);
     echo "DTE generado correctamente.<br>";
     echo "Iniciando transferencia a la API...<br>";
     $respuestaAPI = enviarDTEAPI($dte, $cliente);
