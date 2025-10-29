@@ -79,7 +79,7 @@ class CompraController extends Controller
     $nuevo_precio_costo = $nuevo_stock > 0
         ? (($stock_anterior * $precio_anterior) + ($cantidad * $precio)) / $nuevo_stock
         : $precio;
-
+ 
     // Actualizar producto
     $producto->update([
         'stock' => $nuevo_stock,
