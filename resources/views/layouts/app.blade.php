@@ -183,54 +183,20 @@
     </ul>
 </li>
 
-{{-- 8. Contabilidad --}}
-<li class="nav-item has-treeview">
-    <a href="#" class="nav-link">
-        <i class="nav-icon fas fa-balance-scale"></i>
-        <p>
-            Contabilidad
-            <i class="right fas fa-angle-left"></i>
-        </p>
-    </a>
-    <ul class="nav nav-treeview">
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Balances</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Estados de resultados</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Balance de comprobación</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Libros auxiliares</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Libros de IVA</p>
-            </a>
-        </li>
-    </ul>
-</li>
 
 {{-- 9. Kardex --}} 
 <li class="nav-item">
     <a href="{{ route('kardex.index') }}" class="nav-link {{ request()->routeIs('kardex.index') ? 'active' : '' }}">
         <i class="nav-icon fas fa-boxes"></i>
         <p>Kardex</p>
+    </a>
+</li>
+
+{{-- 10. Reportes --}}
+<li class="nav-item">
+    <a href="" class="nav-link ">
+        <i class="nav-icon fas fa-boxes"></i>
+        <p>Reportes</p>
     </a>
 </li>
                     <!-- Puedes agregar más módulos aquí -->
