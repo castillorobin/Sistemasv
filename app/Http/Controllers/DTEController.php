@@ -195,16 +195,16 @@ public function anular(Request $request, DocumentoDTE $dte)
             "horAnula" => now()->format('H:i:s'),
         ],
         "emisor" => [
-            "nit" => "008688551",
-            "nombre" => "VILMA JANNET GODOY MENDOZA",
+            "nit" => "032267824",
+            "nombre" => "ROBIN ANTONIO CASTILLO SAAVEDRA",
             "tipoEstablecimiento" => "02",
-            "nomEstablecimiento" => "VILMA JANNET GODOY MENDOZA",
+            "nomEstablecimiento" => "ROBIN ANTONIO CASTILLO SAAVEDRA",
             "codEstableMH" => null,
             "codEstable" => "B001",
             "codPuntoVentaMH" => null,
             "codPuntoVenta" => "P001",
-            "telefono" => "2429-0920",
-            "correo" => "vilmademendoza71@gmail.com"
+            "telefono" => "71902000",
+            "correo" => "castillorobin11@gmail.com"
         ],
         "documento" => [
             "tipoDte" => $legible['identificacion']['tipoDte'],
@@ -233,12 +233,12 @@ public function anular(Request $request, DocumentoDTE $dte)
     ];
 
     $payload = [
-        "Usuario" => "02022504711049",
-        "Password" => "Camioneta2025.",
+        "Usuario" => "0032267824",
+        "Password" => "Alexan24.",
         "Ambiente" => "00",
         "DteJson" => json_encode($dteJson),
-        "Nit" => "008688551",
-        "PasswordPrivado" => "Camioneta2025"
+        "Nit" => "05152308851012",
+        "PasswordPrivado" => 'Pw6r$LbMw93'
     ];
 
 

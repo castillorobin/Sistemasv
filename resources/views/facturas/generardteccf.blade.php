@@ -263,23 +263,23 @@ function crearDTE($fecha_actual, $hora_actual, $detalles, $cliente, $actividad_d
     
      // Configurar emisor
     $dte->emisor = new Emisor();
-    $dte->emisor->nit = "008688551";
-    $dte->emisor->nrc = "3728110";
-    $dte->emisor->nombre = "VILMA JANNET GODOY MENDOZA";
-    $dte->emisor->codActividad = "47214";
-    $dte->emisor->descActividad = "VENTA AL POR MENOR DE PRODUCTOS LACTEOS";
-    $dte->emisor->nombreComercial = "VILMA JANNET GODOY MENDOZA";
+    $dte->emisor->nit = "032267824";
+    $dte->emisor->nrc = "2193320";
+    $dte->emisor->nombre = "ROBIN ANTONIO CASTILLO SAAVEDRA";
+    $dte->emisor->codActividad = "96092";
+    $dte->emisor->descActividad = "Servicios n.c.p.";
+    $dte->emisor->nombreComercial = "ROBIN ANTONIO CASTILLO SAAVEDRA";
     $dte->emisor->tipoEstablecimiento = "02";
     $dte->emisor->direccion = new Direccion();
     $dte->emisor->direccion->departamento = "02";
     $dte->emisor->direccion->municipio = "01";
-    $dte->emisor->direccion->complemento = "PTO 23 VTA 10 AV SUR ENTRE 15 Y 17 CL PTE TERM DE BUSES FCO CL LA TERMINAL 116";
-    $dte->emisor->telefono = "2429-0920";
+    $dte->emisor->direccion->complemento = "9 avenida Sur entre 1 y 3 calle";
+    $dte->emisor->telefono = "71902000";
     $dte->emisor->codEstableMH = null;
     $dte->emisor->codEstable = null;
     $dte->emisor->codPuntoVentaMH = null;
     $dte->emisor->codPuntoVenta = null;
-    $dte->emisor->correo = "vilmademendoza71@gmail.com";
+    $dte->emisor->correo = "castillorobin11@gmail.com";
 
     // Configurar receptor
     $dte->receptor = new Receptor();
@@ -390,12 +390,12 @@ $dte->resumen->numPagoElectronico = null;
 // Función para enviar DTE a la API
 function enviarDTEAPI($dte, $factura) {
     $datos = [
-        'Usuario' => "02022504711049",
-        'Password' => "Camioneta2025.",
+        'Usuario' => "032267824",
+        'Password' => "Alexan24.",
         'Ambiente' => '00',
         'DteJson' => json_encode($dte),
-        'Nit' => "008688551",
-        'PasswordPrivado' => "Camioneta2025",
+        'Nit' => "05152308851012",
+        'PasswordPrivado' => 'Pw6r$LbMw93',
         'TipoDte' => '03',
         'CodigoGeneracion' => $dte->identificacion->codigoGeneracion,
         'NumControl' => $dte->identificacion->numeroControl,
