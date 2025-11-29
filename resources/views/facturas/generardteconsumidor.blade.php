@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <?php
+
 use App\Models\DocumentoDTE;
 
 ini_set('display_errors', 1);
