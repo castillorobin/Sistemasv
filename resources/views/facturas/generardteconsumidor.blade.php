@@ -407,7 +407,7 @@ function enviarDTEAPI($dte, $cliente) {
         'NumControl' => $dte->identificacion->numeroControl,
         'VersionDte' => 1,
         //'CorreoCliente' => "poncemarito2019@gmail.com"
-        'CorreoCliente' => $cliente[0]->Correo
+        'CorreoCliente' => $cliente[0]->correo
     ];
 
    // echo "<pre>JSON enviado a la API:<br>" . json_encode($datos, JSON_PRETTY_PRINT) . "</pre>";
