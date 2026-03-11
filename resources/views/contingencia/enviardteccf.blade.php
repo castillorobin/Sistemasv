@@ -119,7 +119,7 @@ function enviarDTEAPI($original) {
 
    // echo "<pre>JSON enviado a la API:<br>" . json_encode($datos, JSON_PRETTY_PRINT) . "</pre>";
 
-    $ch = curl_init('http://98.89.90.33:7122/api/procesar-dte');
+    $ch = curl_init('http://163.245.212.103:7122/api/procesar-dte');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($datos));
