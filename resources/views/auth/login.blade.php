@@ -34,9 +34,10 @@
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Entrar</button>
-
+<!--
         <div class="text-center mt-3">
             <a href="{{ route('register') }}">¿No tienes cuenta? Registrarse</a>
         </div>
+-->
     </form>
 @endsection
